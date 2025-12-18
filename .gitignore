@@ -12,16 +12,17 @@
 .swiftpm/
 migrate_working_dir/
 
+# Agent configuration (local dev tooling)
+.agent/
+
 # IntelliJ related
 *.iml
 *.ipr
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# VS Code
+.vscode/
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -43,3 +44,27 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Analysis output files (temporary)
+analysis.log
+analysis_output*.txt
+analysis_results*.txt
+
+# Coverage reports
+coverage/
+
+# Firebase credentials (sensitive)
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+lib/firebase_options.dart
+
+# Environment files
+.env
+.env.*
+
+# Generated Dart files
+*.g.dart
+*.freezed.dart
+
+# Lock files (optional, uncomment if you want to ignore)
+# pubspec.lock
