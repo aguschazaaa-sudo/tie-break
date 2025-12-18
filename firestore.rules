@@ -1,0 +1,96 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user is the admin of the club
+    function isClubAdmin(clubId) {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/clubs/$(clubId)).data.adminId == request.auth.uid;
+    }
+
+    // Helper function to check if user is a helper of the club
+    function isClubHelper(clubId) {
+      return isAuthenticated() && 
+        request.auth.uid in get(/databases/$(database)/documents/clubs/$(clubId)).data.helperIds;
+    }
+
+    // Helper function to check if user has management rights (Admin or Helper)
+    function hasManagementRights(clubId) {
+      return isClubAdmin(clubId) || isClubHelper(clubId);
+    }
+
+    // Rules for Clubs collection
+    match /clubs/{clubId} {
+      // Anyone can read clubs (for listing)
+      allow read: if true;
+      
+      // Only authenticated users can create a club
+      allow create: if isAuthenticated();
+      
+      // Only the admin can update their club
+      allow update: if isClubAdmin(clubId);
+      
+      // Only the admin can delete (or maybe system admin)
+      allow delete: if isClubAdmin(clubId);
+
+      // Rules for Courts subcollection
+      match /courts/{courtId} {
+        // Anyone can read courts (to book)
+        allow read: if true;
+        
+        // Only admins and helpers can manage courts
+        allow create, update, delete: if hasManagementRights(clubId);
+      }
+    }
+    
+    // Rules for Users collection
+    match /users/{userId} {
+      // Users can read other users (for search/profile)
+      allow read: if isAuthenticated();
+      
+      // Users can only write their own data
+      allow write: if request.auth.uid == userId;
+    }
+
+    // Rules for Reservations collection
+    match /reservations/{reservationId} {
+      // Helper to check if user is a participant
+      function isParticipant() {
+        return isAuthenticated() && (
+          request.auth.uid == resource.data.userId || 
+          request.auth.uid in resource.data.participantIds
+        );
+      }
+
+      // Helper to check if user manages the club of this reservation
+      function managesClub() {
+        let clubId = resource.data.clubId;
+        return hasManagementRights(clubId);
+      }
+
+      // Allow read if participant or club manager
+      allow read: if isAuthenticated(); // Broad read for availability check, or refine?
+      // For availability check (query by courtId + date), we need to allow reading reservations of a court.
+      // So, allow read if isAuthenticated() is probably needed for the "checkAvailability" query which filters by courtId.
+      // Ideally we would restrict this, but for now:
+      
+      // Create: Authenticated users can create
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid;
+
+      // Update: Club managers can update (approve/reject), Owner can cancel
+      allow update: if isAuthenticated() && (
+        managesClub() || 
+        (request.auth.uid == resource.data.userId && 
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'cancellationReason']) &&
+         request.resource.data.status == 'cancelled')
+      );
+    }
+  }
+}
