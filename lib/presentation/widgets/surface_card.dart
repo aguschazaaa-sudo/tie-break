@@ -35,7 +35,10 @@ class SurfaceCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: borderColor ?? Colors.white.withValues(alpha: 0.2),
+                color:
+                    borderColor ??
+                    Colors.white.withValues(alpha: 0.6), // Borde más visible
+                width: 1.5,
               ),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,

@@ -67,7 +67,7 @@ class FavoriteClubsSection extends StatelessWidget {
 
         // Lista horizontal de clubes
         SizedBox(
-          height: 100,
+          height: 110,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -189,13 +189,20 @@ class _FavoriteClubChip extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 80,
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerHighest,
+          color: colorScheme.surface.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+            color: colorScheme.outlineVariant.withValues(alpha: 0.3),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -205,7 +212,9 @@ class _FavoriteClubChip extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: colorScheme.surface,
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child:
@@ -226,16 +235,18 @@ class _FavoriteClubChip extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Nombre del club
-            Text(
-              club.name,
-              style: TextStyle(
-                color: colorScheme.onSurface,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
+            Flexible(
+              child: Text(
+                club.name,
+                style: TextStyle(
+                  color: colorScheme.onSurface,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
             ),
           ],
         ),

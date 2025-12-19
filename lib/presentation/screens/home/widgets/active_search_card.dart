@@ -36,6 +36,8 @@ class ActiveSearchCard extends StatelessWidget {
     return SurfaceCard(
       onTap: onTap,
       padding: const EdgeInsets.all(16),
+      isGlass: true,
+      isShiny: false, // Desactivado por pedido del usuario
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -174,6 +176,13 @@ class _TypeBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: backgroundColor.withValues(alpha: 0.4),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Text(
         type.displayName,

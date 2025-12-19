@@ -76,14 +76,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     setState(() => _isLoading = true);
     try {
-      final updatedUser = UserModel(
-        id: _currentUser!.id,
-        email: _currentUser!.email,
-        username: _currentUser!.username,
+      final updatedUser = _currentUser!.copyWith(
         displayName: _displayNameController.text.trim(),
-        discriminator: _currentUser!.discriminator,
-        photoUrl: _currentUser!.photoUrl,
-        createdAt: _currentUser!.createdAt,
         category: _selectedCategory,
         gender: _selectedGender,
       );

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:padel_punilla/domain/enums/locality.dart';
 import 'package:padel_punilla/domain/models/club_model.dart';
@@ -13,6 +15,7 @@ import 'package:padel_punilla/presentation/screens/home/widgets/favorite_clubs_s
 import 'package:padel_punilla/presentation/screens/my_reservations/my_reservations_screen.dart';
 import 'package:padel_punilla/presentation/screens/profile/profile_screen.dart';
 import 'package:padel_punilla/presentation/screens/season/leaderboard_screen.dart';
+import 'package:padel_punilla/presentation/widgets/ambient_glow.dart';
 
 /// Pantalla principal de la aplicación (Home).
 ///
@@ -115,7 +118,9 @@ class _HomeScreenState extends State<HomeScreen> {
   /// Carga búsquedas activas de la zona del usuario
   Future<void> _loadActiveSearches() async {
     final userLocality = _currentUser?.locality;
+    debugPrint('[HomeScreen] userLocality: $userLocality');
     if (userLocality == null) {
+      debugPrint('[HomeScreen] userLocality is null, skipping search');
       setState(() => _isLoadingSearches = false);
       return;
     }
@@ -125,14 +130,17 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       // Obtener clubes de la localidad del usuario
       final localClubs = await _clubRepository.getClubsByLocality(userLocality);
+      debugPrint('[HomeScreen] localClubs found: ${localClubs.length}');
 
       // Obtener clubes de localidades cercanas
       final nearbyLocalities = userLocality.nearbyLocalities;
+      debugPrint('[HomeScreen] nearbyLocalities: $nearbyLocalities');
       final nearbyClubsFutures = nearbyLocalities.map(
         (locality) => _clubRepository.getClubsByLocality(locality),
       );
       final nearbyClubsLists = await Future.wait(nearbyClubsFutures);
       final nearbyClubs = nearbyClubsLists.expand((list) => list).toList();
+      debugPrint('[HomeScreen] nearbyClubs found: ${nearbyClubs.length}');
 
       // Crear mapa de clubes para referencia rápida
       final allClubs = [...localClubs, ...nearbyClubs];
@@ -147,8 +155,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Obtener reservas activas de todos los clubes
       final allClubIds = [...localClubIds, ...nearbyClubIds];
+      debugPrint(
+        '[HomeScreen] searching reservations for ${allClubIds.length} clubs',
+      );
       final allReservations = await _reservationRepository
           .getActiveSearchReservations(allClubIds);
+      debugPrint('[HomeScreen] reservations found: ${allReservations.length}');
 
       // Separar reservas en locales y cercanas
       final localReservations =
@@ -169,6 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (e) {
+      debugPrint('[HomeScreen] Error loading active searches: $e');
       if (mounted) {
         setState(() => _isLoadingSearches = false);
       }
@@ -305,9 +318,45 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = _authRepository.currentUser;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Padel Punilla'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              color: theme.scaffoldBackgroundColor.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
+        title: Row(
+          children: [
+            // Logo con gradiente
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [colorScheme.primary, colorScheme.tertiary],
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.sports_tennis,
+                color: colorScheme.onPrimary,
+                size: 18,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'Padel Punilla',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
         actions: [
           // Botón de mis reservas
           IconButton(
@@ -353,102 +402,141 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _refreshData,
-        child: CustomScrollView(
-          slivers: [
-            // Saludo al usuario
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                child: Row(
-                  children: [
-                    // Avatar
-                    if (user?.photoURL != null)
-                      CircleAvatar(
-                        radius: 28,
-                        backgroundImage: NetworkImage(user!.photoURL!),
-                      )
-                    else
-                      CircleAvatar(
-                        radius: 28,
-                        backgroundColor: colorScheme.primaryContainer,
-                        child: Icon(
-                          Icons.person_rounded,
-                          size: 28,
-                          color: colorScheme.onPrimaryContainer,
-                        ),
-                      ),
-                    const SizedBox(width: 16),
-                    // Texto de bienvenida
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '¡Hola, ${_currentUser?.displayName ?? user?.displayName ?? 'Jugador'}!',
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          if (_currentUser?.locality != null)
-                            Text(
-                              _currentUser!.locality!.displayName,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
+      body: Stack(
+        children: [
+          // Ambient Background Glows
+          // 1. Primary Glow (Top Right)
+          Positioned(
+            top: -100,
+            right: -100,
+            child: AmbientGlow(
+              color: colorScheme.primary,
+              size: 400,
+              opacity: 0.35,
+            ),
+          ),
+          // 2. Secondary Glow (Bottom Left)
+          Positioned(
+            bottom: -50,
+            left: -100,
+            child: AmbientGlow(
+              color: colorScheme.secondary,
+              size: 350,
+              opacity: 0.3,
+            ),
+          ),
+
+          // Main Content
+          RefreshIndicator(
+            onRefresh: _refreshData,
+            edgeOffset:
+                100, // Ajuste para que el refresh no quede tapado por AppBar
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1024),
+                child: CustomScrollView(
+                  slivers: [
+                    // Espacio para AppBar transparente
+                    const SliverToBoxAdapter(child: SizedBox(height: 100)),
+
+                    // Saludo al usuario
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                        child: Row(
+                          children: [
+                            // Avatar
+                            if (user?.photoURL != null)
+                              CircleAvatar(
+                                radius: 28,
+                                backgroundImage: NetworkImage(user!.photoURL!),
+                              )
+                            else
+                              CircleAvatar(
+                                radius: 28,
+                                backgroundColor: colorScheme.primaryContainer,
+                                child: Icon(
+                                  Icons.person_rounded,
+                                  size: 28,
+                                  color: colorScheme.onPrimaryContainer,
+                                ),
+                              ),
+                            const SizedBox(width: 16),
+                            // Texto de bienvenida
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '¡Hola, ${_currentUser?.displayName ?? user?.displayName ?? 'Jugador'}!',
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      color: colorScheme.onSurface,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  if (_currentUser?.locality != null)
+                                    Text(
+                                      _currentUser!.locality!.displayName,
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
+                                    ),
+                                ],
                               ),
                             ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
+
+                    // Sección de favoritos
+                    SliverToBoxAdapter(
+                      child: FavoriteClubsSection(
+                        favoriteClubs: _favoriteClubs,
+                        onClubTap: _navigateToClub,
+                        isLoading: _isLoadingFavorites,
+                      ),
+                    ),
+
+                    const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+                    // Sección de búsquedas activas
+                    SliverToBoxAdapter(
+                      child: ActiveSearchSection(
+                        localReservations: _localReservations,
+                        nearbyReservations: _nearbyReservations,
+                        clubs: _clubsMap,
+                        userLocality: _currentUser?.locality,
+                        onReservationTap: _navigateToReservation,
+                        isLoading: _isLoadingSearches,
+                      ),
+                    ),
+
+                    const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+                    // Sección de búsqueda de clubes
+                    SliverToBoxAdapter(
+                      child: ClubSearchSection(
+                        searchResults: _searchResults,
+                        favoriteClubIds:
+                            _currentUser?.favoriteClubIds.toSet() ?? {},
+                        onSearch: _searchClubs,
+                        onClubTap: _navigateToClub,
+                        onFavoriteToggle: _toggleFavorite,
+                        searchQuery: _searchQuery,
+                        isSearching: _isSearching,
+                      ),
+                    ),
+
+                    // Espacio inferior
+                    const SliverToBoxAdapter(child: SizedBox(height: 100)),
                   ],
                 ),
               ),
             ),
-
-            // Sección de favoritos
-            SliverToBoxAdapter(
-              child: FavoriteClubsSection(
-                favoriteClubs: _favoriteClubs,
-                onClubTap: _navigateToClub,
-                isLoading: _isLoadingFavorites,
-              ),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
-            // Sección de búsquedas activas
-            SliverToBoxAdapter(
-              child: ActiveSearchSection(
-                localReservations: _localReservations,
-                nearbyReservations: _nearbyReservations,
-                clubs: _clubsMap,
-                userLocality: _currentUser?.locality,
-                onReservationTap: _navigateToReservation,
-                isLoading: _isLoadingSearches,
-              ),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
-            // Sección de búsqueda de clubes
-            SliverToBoxAdapter(
-              child: ClubSearchSection(
-                searchResults: _searchResults,
-                favoriteClubIds: _currentUser?.favoriteClubIds.toSet() ?? {},
-                onSearch: _searchClubs,
-                onClubTap: _navigateToClub,
-                onFavoriteToggle: _toggleFavorite,
-                searchQuery: _searchQuery,
-                isSearching: _isSearching,
-              ),
-            ),
-
-            // Espacio inferior
-            const SliverToBoxAdapter(child: SizedBox(height: 100)),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

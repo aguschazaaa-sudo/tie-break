@@ -106,27 +106,33 @@ class ClubRepository {
 
   /// Busca clubes activos por nombre (búsqueda parcial, case-insensitive).
   /// Retorna máximo 20 resultados.
+  ///
+  /// Nota: Como Firestore no soporta búsqueda case-insensitive nativa,
+  /// traemos todos los clubes activos y filtramos en cliente.
+  /// Esto es eficiente para un número pequeño de clubes (< 100).
   Future<List<ClubModel>> searchClubsByName(String query) async {
     try {
       if (query.isEmpty) return [];
 
-      // Firestore no soporta búsqueda case-insensitive de forma nativa.
-      // Usamos un campo auxiliar 'nameLower' o hacemos búsqueda por rango.
-      // Aquí usamos búsqueda por rango similar a la de usuarios.
       final queryLower = query.toLowerCase();
 
+      // Traer todos los clubes activos y filtrar en cliente
       final querySnapshot =
-          await _clubsCollection
-              .where('isActive', isEqualTo: true)
-              .orderBy('name')
-              .startAt([queryLower])
-              .endAt(['$queryLower\uf8ff'])
-              .limit(20)
-              .get();
+          await _clubsCollection.where('isActive', isEqualTo: true).get();
 
-      return querySnapshot.docs
-          .map((doc) => ClubModel.fromMap(doc.data()))
-          .toList();
+      final allClubs =
+          querySnapshot.docs
+              .map((doc) => ClubModel.fromMap(doc.data()))
+              .toList();
+
+      // Filtrar por nombre (case-insensitive, búsqueda parcial)
+      final filtered =
+          allClubs
+              .where((club) => club.name.toLowerCase().contains(queryLower))
+              .take(20)
+              .toList();
+
+      return filtered;
     } catch (e) {
       throw Exception('Error al buscar clubes: $e');
     }

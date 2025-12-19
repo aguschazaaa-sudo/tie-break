@@ -84,17 +84,20 @@ class UserModel {
     };
   }
 
+  /// Sentinel value to represent "not provided" for nullable fields
+  static const Object _sentinel = Object();
+
   UserModel copyWith({
     String? id,
     String? email,
     String? username,
     String? displayName,
     String? discriminator,
-    String? photoUrl,
+    Object? photoUrl = _sentinel,
     DateTime? createdAt,
-    PaddleCategory? category,
-    PlayerGender? gender,
-    Locality? locality,
+    Object? category = _sentinel,
+    Object? gender = _sentinel,
+    Object? locality = _sentinel,
     List<String>? followers,
     List<String>? following,
     List<String>? favoriteClubIds,
@@ -105,11 +108,12 @@ class UserModel {
       username: username ?? this.username,
       displayName: displayName ?? this.displayName,
       discriminator: discriminator ?? this.discriminator,
-      photoUrl: photoUrl ?? this.photoUrl,
+      photoUrl: photoUrl == _sentinel ? this.photoUrl : photoUrl as String?,
       createdAt: createdAt ?? this.createdAt,
-      category: category ?? this.category,
-      gender: gender ?? this.gender,
-      locality: locality ?? this.locality,
+      category:
+          category == _sentinel ? this.category : category as PaddleCategory?,
+      gender: gender == _sentinel ? this.gender : gender as PlayerGender?,
+      locality: locality == _sentinel ? this.locality : locality as Locality?,
       followers: followers ?? this.followers,
       following: following ?? this.following,
       favoriteClubIds: favoriteClubIds ?? this.favoriteClubIds,

@@ -37,6 +37,7 @@ class ClubResultCard extends StatelessWidget {
 
     return SurfaceCard(
       onTap: onTap,
+      isGlass: true, // Efecto glass para los resultados
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: Row(
         children: [

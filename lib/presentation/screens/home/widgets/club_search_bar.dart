@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:padel_punilla/presentation/widgets/custom_text_field.dart';
+import 'package:padel_punilla/presentation/widgets/surface_card.dart';
 
 /// Barra de búsqueda para encontrar clubes por nombre.
 ///
@@ -69,26 +70,32 @@ class _ClubSearchBarState extends State<ClubSearchBar> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: CustomTextField(
-        controller: _controller,
-        label: 'Buscar clubes',
-        hint: 'Nombre del club...',
-        prefixIcon: Icons.search_rounded,
-        onChanged: _onTextChanged,
-        suffixIcon: ValueListenableBuilder<TextEditingValue>(
-          valueListenable: _controller,
-          builder: (context, value, child) {
-            if (value.text.isEmpty) return const SizedBox.shrink();
+      child: SurfaceCard(
+        isGlass: true,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        child: CustomTextField(
+          controller: _controller,
+          label: 'Buscar clubes',
+          hint: 'Nombre del club...',
+          prefixIcon: Icons.search_rounded,
+          onChanged: _onTextChanged,
+          fillColor: Colors.transparent,
+          showBorders: false,
+          suffixIcon: ValueListenableBuilder<TextEditingValue>(
+            valueListenable: _controller,
+            builder: (context, value, child) {
+              if (value.text.isEmpty) return const SizedBox.shrink();
 
-            return IconButton(
-              icon: Icon(
-                Icons.clear_rounded,
-                color: colorScheme.onSurfaceVariant,
-              ),
-              onPressed: _clearSearch,
-              tooltip: 'Limpiar búsqueda',
-            );
-          },
+              return IconButton(
+                icon: Icon(
+                  Icons.clear_rounded,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                onPressed: _clearSearch,
+                tooltip: 'Limpiar búsqueda',
+              );
+            },
+          ),
         ),
       ),
     );
