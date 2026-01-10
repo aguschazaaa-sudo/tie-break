@@ -28,6 +28,7 @@ void main() {
       SeasonModel(
         id: 'fallback',
         name: 'fallback',
+        clubId: 'fallback',
         number: 0,
         startDate: DateTime.now(),
         endDate: DateTime.now(),
@@ -68,6 +69,7 @@ void main() {
     final season = SeasonModel(
       id: 's1',
       name: 'Season 1',
+      clubId: 'club1',
       number: 1,
       startDate: now.subtract(const Duration(days: 10)),
       endDate: now.add(const Duration(days: 10)),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:padel_punilla/domain/enums/club_amenity.dart';
 import 'package:padel_punilla/presentation/providers/club_management_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -160,6 +162,8 @@ class _ClubConfigTabState extends State<ClubConfigTab> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Center(child: _buildLogoPicker(context)),
+                    const SizedBox(height: 32),
                     // Layout responsivo para nombre y teléfono
                     if (widget.isDesktop)
                       Row(
@@ -251,14 +255,142 @@ class _ClubConfigTabState extends State<ClubConfigTab> {
                 ),
               ),
             ),
+
+          const SizedBox(height: 48),
+
+          // ============================================================
+          // SECCIÓN 3: Comodidades y Servicios
+          // ============================================================
+          _buildSectionHeader(
+            context,
+            'Comodidades',
+            'Selecciona los servicios que ofrece tu club.',
+          ),
+          const SizedBox(height: 24),
+
+          Card(
+            elevation: 0,
+            color: colorScheme.surfaceContainerLow,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children:
+                    ClubAmenity.values.map((amenity) {
+                      final isSelected = club.amenities.contains(amenity);
+                      return FilterChip(
+                        selected: isSelected,
+                        label: Text(amenity.displayName),
+                        onSelected: (selected) async {
+                          try {
+                            await context
+                                .read<ClubManagementProvider>()
+                                .toggleAmenity(amenity);
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error al actualizar: $e'),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                      );
+                    }).toList(),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
+  Future<void> _pickLogo() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null && mounted) {
+      try {
+        await context.read<ClubManagementProvider>().updateClubLogo(pickedFile);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Logo actualizado correctamente')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error al actualizar logo: $e')),
+          );
+        }
+      }
+    }
+  }
+
   // ============================================================
   // Widgets auxiliares para construir la UI
   // ============================================================
+
+  Widget _buildLogoPicker(BuildContext context) {
+    final club = context.watch<ClubManagementProvider>().club;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Center(
+      child: Stack(
+        children: [
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: colorScheme.outlineVariant, width: 2),
+              image:
+                  club?.logoUrl != null
+                      ? DecorationImage(
+                        image: NetworkImage(club!.logoUrl!),
+                        fit: BoxFit.cover,
+                      )
+                      : null,
+            ),
+            child:
+                club?.logoUrl == null
+                    ? Icon(
+                      Icons.store_mall_directory,
+                      size: 60,
+                      color: colorScheme.outline,
+                    )
+                    : null,
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Material(
+              color: colorScheme.primary,
+              shape: const CircleBorder(),
+              elevation: 4,
+              child: InkWell(
+                onTap: _pickLogo,
+                customBorder: const CircleBorder(),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.camera_alt,
+                    size: 20,
+                    color: colorScheme.onPrimary,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   /// Construye un header de sección con título y subtítulo
   Widget _buildSectionHeader(

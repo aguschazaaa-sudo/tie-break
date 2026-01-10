@@ -490,6 +490,10 @@ class ReservationActionSheet extends StatelessWidget {
         return colorScheme.tertiaryContainer;
       case ReservationType.falta1:
         return colorScheme.secondaryContainer;
+      case ReservationType.maintenance:
+        return colorScheme.surfaceContainerHighest;
+      case ReservationType.coaching:
+        return colorScheme.tertiaryContainer;
     }
   }
 
@@ -501,6 +505,10 @@ class ReservationActionSheet extends StatelessWidget {
         return colorScheme.onTertiaryContainer;
       case ReservationType.falta1:
         return colorScheme.onSecondaryContainer;
+      case ReservationType.maintenance:
+        return colorScheme.onSurfaceVariant;
+      case ReservationType.coaching:
+        return colorScheme.onTertiaryContainer;
     }
   }
 
@@ -512,6 +520,10 @@ class ReservationActionSheet extends StatelessWidget {
         return Icons.groups;
       case ReservationType.falta1:
         return Icons.person_add;
+      case ReservationType.maintenance:
+        return Icons.build;
+      case ReservationType.coaching:
+        return Icons.sports_tennis;
     }
   }
 }

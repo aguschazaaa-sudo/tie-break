@@ -3,6 +3,8 @@ import 'package:padel_punilla/domain/models/court_model.dart';
 import 'package:padel_punilla/domain/repositories/court_repository.dart';
 import 'package:padel_punilla/presentation/providers/club_management_provider.dart';
 import 'package:padel_punilla/presentation/screens/court/court_form_screen.dart';
+import 'package:padel_punilla/presentation/widgets/dialogs/payment_dialog.dart';
+import 'package:padel_punilla/presentation/widgets/dialogs/block_court_dialog.dart';
 import 'package:padel_punilla/presentation/widgets/timeline/court_timeline_row.dart';
 import 'package:padel_punilla/presentation/widgets/timeline/reservation_action_sheet.dart';
 import 'package:padel_punilla/presentation/widgets/timeline/timeline_config.dart';
@@ -194,6 +196,12 @@ class _ClubCourtsTabState extends State<ClubCourtsTab> {
           const Spacer(),
           _buildLegend(context),
           const SizedBox(width: 16),
+          OutlinedButton.icon(
+            onPressed: () => _showBlockDialog(context),
+            icon: const Icon(Icons.block),
+            label: const Text('Bloquear'),
+          ),
+          const SizedBox(width: 12),
           FilledButton.icon(
             onPressed: () {
               if (provider.club != null) {
@@ -211,6 +219,36 @@ class _ClubCourtsTabState extends State<ClubCourtsTab> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _showBlockDialog(BuildContext context) async {
+    final provider = context.read<ClubManagementProvider>();
+    final clubId = provider.club?.id;
+    if (clubId == null) return;
+
+    // Obtener canchas para el diálogo
+    final courtRepo = context.read<CourtRepository>();
+    final courts = await courtRepo.getCourts(clubId);
+
+    if (!context.mounted) return;
+
+    showDialog(
+      context: context,
+      builder:
+          (context) => BlockCourtDialog(
+            initialDate: provider.selectedDate,
+            courts: courts,
+            onBlock: (courtId, date, duration, type, description) {
+              provider.blockCourt(
+                courtId: courtId,
+                date: date,
+                durationMinutes: duration,
+                type: type,
+                description: description,
+              );
+            },
+          ),
     );
   }
 
@@ -368,13 +406,19 @@ class _ClubCourtsTabState extends State<ClubCourtsTab> {
                                       (team) =>
                                           provider.setMatchWinner(res.id, team),
                                   onManagePayment: () {
-                                    // TODO: Implementar diálogo de pago
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'Gestión de pago próximamente',
-                                        ),
-                                      ),
+                                    showDialog(
+                                      context: context,
+                                      builder:
+                                          (context) => PaymentDialog(
+                                            reservation: res,
+                                            onUpdate: (amount, status) {
+                                              provider.updatePayment(
+                                                res.id,
+                                                paidAmount: amount,
+                                                paymentStatus: status,
+                                              );
+                                            },
+                                          ),
                                     );
                                   },
                                 );

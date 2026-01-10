@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:padel_punilla/domain/enums/locality.dart';
 import 'package:padel_punilla/domain/models/club_model.dart';
@@ -32,9 +33,6 @@ class _CreateClubScreenState extends State<CreateClubScreen> {
   Locality _selectedLocality = Locality.villaCarlosPaz;
   bool _isLoading = false;
 
-  final _clubRepository = ClubRepository();
-  final _authRepository = AuthRepository();
-  final _storageRepository = StorageRepository();
   final _picker = ImagePicker();
 
   @override
@@ -63,7 +61,15 @@ class _CreateClubScreenState extends State<CreateClubScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final user = _authRepository.currentUser;
+      final authRepo = context.read<AuthRepository>();
+      final clubRepo = context.read<ClubRepository>();
+      final storageRepo =
+          context
+              .read<
+                StorageRepository
+              >(); // Ensure this is provided in main.dart!
+
+      final user = authRepo.currentUser;
       if (user == null) throw Exception('Usuario no autenticado');
 
       final now = DateTime.now();
@@ -71,7 +77,7 @@ class _CreateClubScreenState extends State<CreateClubScreen> {
       String? logoUrl;
 
       if (_imageFile != null) {
-        logoUrl = await _storageRepository.uploadClubLogo(_imageFile!, clubId);
+        logoUrl = await storageRepo.uploadClubLogo(_imageFile!, clubId);
       }
 
       final club = ClubModel(
@@ -90,7 +96,7 @@ class _CreateClubScreenState extends State<CreateClubScreen> {
                 : null,
       );
 
-      await _clubRepository.createClub(club);
+      await clubRepo.createClub(club);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

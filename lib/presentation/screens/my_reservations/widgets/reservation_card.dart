@@ -228,6 +228,10 @@ class ReservationCard extends StatelessWidget {
         chipColor = colorScheme.secondary;
       case ReservationType.normal:
         chipColor = colorScheme.primary;
+      case ReservationType.maintenance:
+        chipColor = colorScheme.outline;
+      case ReservationType.coaching:
+        chipColor = colorScheme.tertiary;
     }
 
     if (isInactive) {

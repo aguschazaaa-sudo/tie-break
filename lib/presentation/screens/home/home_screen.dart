@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:padel_punilla/domain/enums/locality.dart';
 import 'package:padel_punilla/domain/models/club_model.dart';
 import 'package:padel_punilla/domain/models/reservation_model.dart';
@@ -31,11 +32,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Repositorios
-  final _authRepository = AuthRepository();
-  final _clubRepository = ClubRepository();
-  final _reservationRepository = ReservationRepository();
-
   // Estado del usuario
   UserModel? _currentUser;
 
@@ -74,11 +70,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Carga datos del usuario actual
   Future<void> _loadUserData() async {
-    final user = _authRepository.currentUser;
+    final authRepo = context.read<AuthRepository>();
+    final user = authRepo.currentUser;
     if (user == null) return;
 
     try {
-      final userData = await _authRepository.getUserData(user.uid);
+      final userData = await authRepo.getUserData(user.uid);
       if (mounted) {
         setState(() {
           _currentUser = userData;
@@ -99,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _isLoadingFavorites = true);
 
     try {
-      final clubs = await _clubRepository.getClubsByIds(
+      final clubs = await context.read<ClubRepository>().getClubsByIds(
         _currentUser!.favoriteClubIds,
       );
       if (mounted) {
@@ -128,15 +125,18 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _isLoadingSearches = true);
 
     try {
+      final clubRepo = context.read<ClubRepository>();
+      final reservationRepo = context.read<ReservationRepository>();
+
       // Obtener clubes de la localidad del usuario
-      final localClubs = await _clubRepository.getClubsByLocality(userLocality);
+      final localClubs = await clubRepo.getClubsByLocality(userLocality);
       debugPrint('[HomeScreen] localClubs found: ${localClubs.length}');
 
       // Obtener clubes de localidades cercanas
       final nearbyLocalities = userLocality.nearbyLocalities;
       debugPrint('[HomeScreen] nearbyLocalities: $nearbyLocalities');
       final nearbyClubsFutures = nearbyLocalities.map(
-        (locality) => _clubRepository.getClubsByLocality(locality),
+        (locality) => clubRepo.getClubsByLocality(locality),
       );
       final nearbyClubsLists = await Future.wait(nearbyClubsFutures);
       final nearbyClubs = nearbyClubsLists.expand((list) => list).toList();
@@ -158,8 +158,9 @@ class _HomeScreenState extends State<HomeScreen> {
       debugPrint(
         '[HomeScreen] searching reservations for ${allClubIds.length} clubs',
       );
-      final allReservations = await _reservationRepository
-          .getActiveSearchReservations(allClubIds);
+      final allReservations = await reservationRepo.getActiveSearchReservations(
+        allClubIds,
+      );
       debugPrint('[HomeScreen] reservations found: ${allReservations.length}');
 
       // Separar reservas en locales y cercanas
@@ -203,7 +204,9 @@ class _HomeScreenState extends State<HomeScreen> {
     if (query.isEmpty) return;
 
     try {
-      final results = await _clubRepository.searchClubsByName(query);
+      final results = await context.read<ClubRepository>().searchClubsByName(
+        query,
+      );
       if (mounted && _searchQuery == query) {
         setState(() {
           _searchResults = results;
@@ -225,8 +228,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final isFavorite = user.favoriteClubIds.contains(clubId);
 
     try {
+      final authRepo = context.read<AuthRepository>();
       if (isFavorite) {
-        await _authRepository.removeFavoriteClub(user.id, clubId);
+        await authRepo.removeFavoriteClub(user.id, clubId);
         // Actualizar estado local
         setState(() {
           _currentUser = user.copyWith(
@@ -236,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _favoriteClubs.removeWhere((club) => club.id == clubId);
         });
       } else {
-        await _authRepository.addFavoriteClub(user.id, clubId);
+        await authRepo.addFavoriteClub(user.id, clubId);
         // Buscar el club en resultados de búsqueda o cargar
         ClubModel? club = _searchResults.firstWhere(
           (c) => c.id == clubId,
@@ -257,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // Si no lo encontramos, cargarlo
         if (club.name.isEmpty) {
-          club = await _clubRepository.getClub(clubId);
+          club = await context.read<ClubRepository>().getClub(clubId);
         }
 
         if (club != null && mounted) {
@@ -298,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
   /// Cierra sesión
   Future<void> _signOut() async {
     try {
-      await _authRepository.signOut();
+      await context.read<AuthRepository>().signOut();
       if (mounted) {
         Navigator.of(context).popUntil((route) => route.isFirst);
       }
@@ -315,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final user = _authRepository.currentUser;
+    final user = context.read<AuthRepository>().currentUser;
 
     return Scaffold(
       extendBodyBehindAppBar: true,

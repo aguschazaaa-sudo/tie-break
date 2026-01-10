@@ -43,6 +43,10 @@ class TimelineReservationCard extends StatelessWidget {
         return Theme.of(context).colorScheme.tertiaryContainer;
       case ReservationType.falta1:
         return Theme.of(context).colorScheme.secondaryContainer;
+      case ReservationType.maintenance:
+        return Theme.of(context).colorScheme.surfaceContainerHighest; // Grey
+      case ReservationType.coaching:
+        return Theme.of(context).colorScheme.tertiary; // Purple
     }
   }
 
@@ -55,6 +59,10 @@ class TimelineReservationCard extends StatelessWidget {
         return Theme.of(context).colorScheme.onTertiaryContainer;
       case ReservationType.falta1:
         return Theme.of(context).colorScheme.onSecondaryContainer;
+      case ReservationType.maintenance:
+        return Theme.of(context).colorScheme.onSurfaceVariant;
+      case ReservationType.coaching:
+        return Theme.of(context).colorScheme.onTertiary;
     }
   }
 
@@ -79,11 +87,15 @@ class TimelineReservationCard extends StatelessWidget {
 
     final isPending = reservation.status == ReservationStatus.pending;
     final isIncomplete = _isIncomplete;
+    final isBlocked =
+        reservation.type == ReservationType.maintenance ||
+        reservation.type == ReservationType.coaching;
 
     // Determinar opacidad y estilo según estado
     // Incompletas -> muy tenue (0.4)
     // Pendientes -> semi-transparente (0.7)
     // Aprobadas -> sólido (1.0)
+    // Bloqueadas -> sólido
     double opacity = 1.0;
     if (isIncomplete) {
       opacity = 0.4;
@@ -91,7 +103,7 @@ class TimelineReservationCard extends StatelessWidget {
       opacity = 0.7;
     }
 
-    // Border para pendientes (warning naranja)
+    // Border para pendientes (warning naranja) O Mantenimiento (dashed pattern simulated usually, but here solid border)
     Border? border;
     if (isPending && !isIncomplete) {
       border = Border.all(color: Colors.orange.shade700, width: 2);
@@ -100,6 +112,11 @@ class TimelineReservationCard extends StatelessWidget {
         color: textColor.withValues(alpha: 0.3),
         width: 1,
         style: BorderStyle.solid,
+      );
+    } else if (reservation.type == ReservationType.maintenance) {
+      border = Border.all(
+        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+        width: 1,
       );
     }
 
@@ -127,6 +144,15 @@ class TimelineReservationCard extends StatelessWidget {
                   Icon(Icons.female, size: 12, color: Colors.pink.shade300),
                   const SizedBox(width: 2),
                 ],
+                // Icono específico para bloqueos
+                if (reservation.type == ReservationType.maintenance) ...[
+                  Icon(Icons.build, size: 12, color: textColor),
+                  const SizedBox(width: 4),
+                ],
+                if (reservation.type == ReservationType.coaching) ...[
+                  Icon(Icons.sports_tennis, size: 12, color: textColor),
+                  const SizedBox(width: 4),
+                ],
                 Expanded(
                   child: Text(
                     _getReservationTitle(),
@@ -140,8 +166,8 @@ class TimelineReservationCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                // Indicador de estado
-                _buildStatusIcon(textColor),
+                // Indicador de estado (solo si no es bloqueo)
+                if (!isBlocked) _buildStatusIcon(textColor),
               ],
             ),
 
@@ -158,8 +184,8 @@ class TimelineReservationCard extends StatelessWidget {
               ),
             ],
 
-            // Indicador de pago si está configurado y hay espacio
-            if (config.showPaymentStatus && width > 140) ...[
+            // Indicador de pago si está configurado y hay espacio (no para bloqueos)
+            if (config.showPaymentStatus && width > 140 && !isBlocked) ...[
               const SizedBox(height: 2),
               _buildPaymentIndicator(textColor),
             ],
@@ -199,6 +225,13 @@ class TimelineReservationCard extends StatelessWidget {
 
   /// Obtiene el título a mostrar en la card
   String _getReservationTitle() {
+    if (reservation.type == ReservationType.maintenance) {
+      return 'MANTENIMIENTO';
+    }
+    if (reservation.type == ReservationType.coaching) {
+      return 'CLASE';
+    }
+
     // Si tenemos nombre de usuario y está configurado para mostrarlo
     if (config.showUserName && userName != null && userName!.isNotEmpty) {
       return userName!;

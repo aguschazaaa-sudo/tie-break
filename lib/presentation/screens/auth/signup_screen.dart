@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:padel_punilla/domain/enums/locality.dart';
 import 'package:padel_punilla/domain/enums/paddle_category.dart';
 import 'package:padel_punilla/domain/enums/player_gender.dart';
@@ -28,18 +29,17 @@ class _SignupScreenState extends State<SignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _authRepository = AuthRepository();
   bool _isLoading = false;
   bool _isPasswordVisible = false;
   PaddleCategory? _selectedCategory;
   PlayerGender? _selectedGender;
   Locality? _selectedLocality;
-
   Future<void> _signup() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
     try {
-      await _authRepository.createUserWithEmailAndPassword(
+      final authRepo = context.read<AuthRepository>();
+      await authRepo.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
         displayName: _nameController.text.trim(),
@@ -68,12 +68,11 @@ class _SignupScreenState extends State<SignupScreen> {
   Future<void> _signupWithGoogle() async {
     setState(() => _isLoading = true);
     try {
-      final credential = await _authRepository.signInWithGoogle();
+      final authRepo = context.read<AuthRepository>();
+      final credential = await authRepo.signInWithGoogle();
       if (credential != null && mounted) {
         // Verificar si el usuario tiene los datos completos
-        final userData = await _authRepository.getUserData(
-          credential.user!.uid,
-        );
+        final userData = await authRepo.getUserData(credential.user!.uid);
 
         if (mounted) {
           if (userData?.category == null || userData?.gender == null) {

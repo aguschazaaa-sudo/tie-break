@@ -1,3 +1,4 @@
+import 'package:padel_punilla/domain/enums/club_amenity.dart';
 import 'package:padel_punilla/domain/enums/locality.dart';
 
 class ClubModel {
@@ -23,6 +24,7 @@ class ClubModel {
       '20:00',
       '21:30',
     ],
+    this.amenities = const [],
   });
 
   factory ClubModel.fromMap(Map<String, dynamic> map) {
@@ -36,7 +38,7 @@ class ClubModel {
       address: (map['address'] as String?) ?? '',
       locality: Locality.values.firstWhere(
         (e) => e.name == map['locality'],
-        orElse: () => Locality.villaCarlosPaz, // Default fallback
+        orElse: () => Locality.villaCarlosPaz,
       ),
       createdAt: DateTime.parse(map['createdAt'] as String),
       expiresAt: DateTime.parse(map['expiresAt'] as String),
@@ -46,6 +48,18 @@ class ClubModel {
       availableSchedules: List<String>.from(
         (map['availableSchedules'] as List<dynamic>?) ?? [],
       ),
+      amenities:
+          ((map['amenities'] as List<dynamic>?) ?? [])
+              .map(
+                (e) => ClubAmenity.values.firstWhere(
+                  (a) => a.name == e,
+                  orElse:
+                      () =>
+                          ClubAmenity
+                              .wifi, // Fallback safe, though risky logic if new enums appear
+                ),
+              )
+              .toList(),
     );
   }
   final String id;
@@ -62,6 +76,7 @@ class ClubModel {
   final bool isActive;
   final bool isApproved;
   final List<String> availableSchedules;
+  final List<ClubAmenity> amenities;
 
   Map<String, dynamic> toMap() {
     return {
@@ -72,13 +87,14 @@ class ClubModel {
       'adminId': adminId,
       'helperIds': helperIds,
       'address': address,
-      'locality': locality.name, // Store enum as string
+      'locality': locality.name,
       'createdAt': createdAt.toIso8601String(),
       'expiresAt': expiresAt.toIso8601String(),
       'contactPhone': contactPhone,
       'isActive': isActive,
       'isApproved': isApproved,
       'availableSchedules': availableSchedules,
+      'amenities': amenities.map((e) => e.name).toList(),
     };
   }
 
@@ -97,6 +113,7 @@ class ClubModel {
     bool? isActive,
     bool? isApproved,
     List<String>? availableSchedules,
+    List<ClubAmenity>? amenities,
   }) {
     return ClubModel(
       id: id ?? this.id,
@@ -113,6 +130,7 @@ class ClubModel {
       isActive: isActive ?? this.isActive,
       isApproved: isApproved ?? this.isApproved,
       availableSchedules: availableSchedules ?? this.availableSchedules,
+      amenities: amenities ?? this.amenities,
     );
   }
 
@@ -126,7 +144,6 @@ class ClubModel {
         other.description == description &&
         other.logoUrl == logoUrl &&
         other.adminId == adminId &&
-        // List equality check
         other.helperIds.length == helperIds.length &&
         other.helperIds.every(helperIds.contains) &&
         other.address == address &&
@@ -137,7 +154,9 @@ class ClubModel {
         other.isActive == isActive &&
         other.isApproved == isApproved &&
         other.availableSchedules.length == availableSchedules.length &&
-        other.availableSchedules.every(availableSchedules.contains);
+        other.availableSchedules.every(availableSchedules.contains) &&
+        other.amenities.length == amenities.length &&
+        other.amenities.every(amenities.contains);
   }
 
   @override
@@ -155,11 +174,12 @@ class ClubModel {
         contactPhone.hashCode ^
         isActive.hashCode ^
         isApproved.hashCode ^
-        Object.hashAll(availableSchedules);
+        Object.hashAll(availableSchedules) ^
+        Object.hashAll(amenities);
   }
 
   @override
   String toString() {
-    return 'ClubModel(id: $id, name: $name, description: $description, logoUrl: $logoUrl, adminId: $adminId, helperIds: $helperIds, address: $address, locality: $locality, createdAt: $createdAt, expiresAt: $expiresAt, contactPhone: $contactPhone, isActive: $isActive, isApproved: $isApproved, availableSchedules: $availableSchedules)';
+    return 'ClubModel(id: $id, name: $name, description: $description, logoUrl: $logoUrl, adminId: $adminId, helperIds: $helperIds, address: $address, locality: $locality, createdAt: $createdAt, expiresAt: $expiresAt, contactPhone: $contactPhone, isActive: $isActive, isApproved: $isApproved, availableSchedules: $availableSchedules, amenities: $amenities)';
   }
 }

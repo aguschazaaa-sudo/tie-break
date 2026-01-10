@@ -81,7 +81,7 @@ Tie Break es una aplicación móvil desarrollada en Flutter que permite a los ju
 ```
 lib/
 ├── config/           # Configuración (temas, rutas, constantes)
-├── data/             # Capa de datos (modelos, repositorios)
+├── domain/           # Modelos y Repositorios (Lógica de Negocio)
 ├── presentation/     # Capa de presentación (screens, widgets)
 │   ├── screens/      # Pantallas de la app
 │   ├── widgets/      # Widgets reutilizables

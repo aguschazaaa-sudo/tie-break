@@ -179,6 +179,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       final newSeason = SeasonModel(
         id: seasonId,
         name: 'Temporada Activa',
+        clubId: 'debug_club',
         number: 1,
         startDate: DateTime.now().subtract(const Duration(days: 10)),
         endDate: DateTime.now().add(const Duration(days: 20)),

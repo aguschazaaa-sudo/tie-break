@@ -2,8 +2,8 @@ import 'package:padel_punilla/domain/models/reservation_model.dart';
 import 'package:padel_punilla/domain/repositories/reservation_repository.dart';
 
 class ReservationService {
-  ReservationService({ReservationRepository? reservationRepository})
-    : _reservationRepository = reservationRepository ?? ReservationRepository();
+  ReservationService({required ReservationRepository reservationRepository})
+    : _reservationRepository = reservationRepository;
   final ReservationRepository _reservationRepository;
 
   Future<bool> checkAvailability(

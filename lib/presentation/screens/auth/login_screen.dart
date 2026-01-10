@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:padel_punilla/domain/repositories/auth_repository.dart';
 import 'package:padel_punilla/presentation/screens/auth/complete_profile_screen.dart';
 import 'package:padel_punilla/presentation/screens/auth/signup_screen.dart';
@@ -20,21 +21,20 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _authRepository = AuthRepository();
   bool _isLoading = false;
   bool _isPasswordVisible = false;
-
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
     try {
-      await _authRepository.signInWithEmailAndPassword(
+      final authRepo = context.read<AuthRepository>();
+      await authRepo.signInWithEmailAndPassword(
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
-      final user = _authRepository.currentUser;
+      final user = authRepo.currentUser;
       if (user != null && mounted) {
-        final userData = await _authRepository.getUserData(user.uid);
+        final userData = await authRepo.getUserData(user.uid);
         if (mounted) {
           if (userData?.category == null || userData?.gender == null) {
             Navigator.pushReplacement(
@@ -65,11 +65,10 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _loginWithGoogle() async {
     setState(() => _isLoading = true);
     try {
-      final credential = await _authRepository.signInWithGoogle();
+      final authRepo = context.read<AuthRepository>();
+      final credential = await authRepo.signInWithGoogle();
       if (credential != null && mounted) {
-        final userData = await _authRepository.getUserData(
-          credential.user!.uid,
-        );
+        final userData = await authRepo.getUserData(credential.user!.uid);
         if (mounted) {
           if (userData?.category == null || userData?.gender == null) {
             Navigator.pushReplacement(

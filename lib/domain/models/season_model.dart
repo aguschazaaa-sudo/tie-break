@@ -2,6 +2,7 @@ class SeasonModel {
   SeasonModel({
     required this.id,
     required this.name,
+    required this.clubId,
     required this.number,
     required this.startDate,
     required this.endDate,
@@ -12,6 +13,7 @@ class SeasonModel {
     return SeasonModel(
       id: id,
       name: map['name'] as String? ?? '',
+      clubId: map['clubId'] as String? ?? '',
       number: map['number'] as int? ?? 0,
       startDate:
           map['startDate'] is DateTime
@@ -26,6 +28,7 @@ class SeasonModel {
   }
   final String id;
   final String name;
+  final String clubId;
   final int number;
   final DateTime startDate;
   final DateTime endDate;
@@ -35,11 +38,32 @@ class SeasonModel {
     return {
       'id': id,
       'name': name,
+      'clubId': clubId,
       'number': number,
       'startDate': startDate.toIso8601String(),
       'endDate': endDate.toIso8601String(),
       'isActive': isActive,
     };
+  }
+
+  SeasonModel copyWith({
+    String? id,
+    String? name,
+    String? clubId,
+    int? number,
+    DateTime? startDate,
+    DateTime? endDate,
+    bool? isActive,
+  }) {
+    return SeasonModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      clubId: clubId ?? this.clubId,
+      number: number ?? this.number,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      isActive: isActive ?? this.isActive,
+    );
   }
 
   @override
@@ -49,6 +73,7 @@ class SeasonModel {
     return other is SeasonModel &&
         other.id == id &&
         other.name == name &&
+        other.clubId == clubId &&
         other.number == number &&
         other.startDate == startDate &&
         other.endDate == endDate &&
@@ -59,6 +84,7 @@ class SeasonModel {
   int get hashCode {
     return id.hashCode ^
         name.hashCode ^
+        clubId.hashCode ^
         number.hashCode ^
         startDate.hashCode ^
         endDate.hashCode ^
@@ -67,6 +93,6 @@ class SeasonModel {
 
   @override
   String toString() {
-    return 'SeasonModel(id: $id, name: $name, number: $number, startDate: $startDate, endDate: $endDate, isActive: $isActive)';
+    return 'SeasonModel(id: $id, name: $name, clubId: $clubId, number: $number, startDate: $startDate, endDate: $endDate, isActive: $isActive)';
   }
 }

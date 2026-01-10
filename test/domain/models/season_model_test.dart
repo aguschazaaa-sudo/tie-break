@@ -9,6 +9,7 @@ void main() {
       final season = SeasonModel(
         id: 'test_id',
         name: 'Test Season',
+        clubId: 'test_club',
         number: 1,
         startDate: now,
         endDate: now.add(const Duration(days: 30)),
@@ -18,6 +19,7 @@ void main() {
       final map = season.toMap();
 
       expect(map['name'], 'Test Season');
+      expect(map['clubId'], 'test_club');
       expect(map['isActive'], true);
       expect(map['id'], 'test_id');
 

@@ -24,7 +24,7 @@ class MaterialTheme {
       onError: Color(0xffffffff),
       errorContainer: Color(0xffffdad6),
       onErrorContainer: Color(0xff93000a),
-      surface: Color(0xfffaf8ff),
+      surface: Color(0xFFFAF8FF),
       onSurface: Color(0xff1a1b21),
       onSurfaceVariant: Color(0xff3f484a),
       outline: Color(0xff6f797a),

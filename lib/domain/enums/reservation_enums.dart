@@ -41,7 +41,9 @@ enum PaymentStatus {
 enum ReservationType {
   normal,
   match2vs2,
-  falta1;
+  falta1,
+  maintenance,
+  coaching;
 
   String get displayName {
     switch (this) {
@@ -51,6 +53,10 @@ enum ReservationType {
         return '2 vs 2';
       case ReservationType.falta1:
         return 'Falta 1';
+      case ReservationType.maintenance:
+        return 'Mantenimiento';
+      case ReservationType.coaching:
+        return 'Clase / Entrenamiento';
     }
   }
 }

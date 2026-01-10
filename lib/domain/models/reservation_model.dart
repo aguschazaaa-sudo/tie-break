@@ -20,6 +20,7 @@ class ReservationModel {
     this.team1Ids = const [],
     this.team2Ids = const [],
     this.womenOnly = false,
+    this.winnerTeam,
   });
 
   factory ReservationModel.fromMap(Map<String, dynamic> map) {
@@ -51,6 +52,7 @@ class ReservationModel {
       team1Ids: List<String>.from((map['team1Ids'] as List?) ?? []),
       team2Ids: List<String>.from((map['team2Ids'] as List?) ?? []),
       womenOnly: map['womenOnly'] as bool? ?? false,
+      winnerTeam: map['winnerTeam'] as int?,
     );
   }
   final String id;
@@ -73,6 +75,9 @@ class ReservationModel {
 
   /// Si es true, solo mujeres pueden participar (para 2vs2 y falta1)
   final bool womenOnly;
+
+  /// Equipo ganador (1 o 2). Null si no se ha jugado o definido.
+  final int? winnerTeam;
 
   double get remainingAmount => price - paidAmount;
 
@@ -106,6 +111,7 @@ class ReservationModel {
       'team1Ids': team1Ids,
       'team2Ids': team2Ids,
       'womenOnly': womenOnly,
+      'winnerTeam': winnerTeam,
     };
   }
 
@@ -128,6 +134,7 @@ class ReservationModel {
     List<String>? team1Ids,
     List<String>? team2Ids,
     bool? womenOnly,
+    int? winnerTeam,
   }) {
     return ReservationModel(
       id: id ?? this.id,
@@ -148,6 +155,7 @@ class ReservationModel {
       team1Ids: team1Ids ?? this.team1Ids,
       team2Ids: team2Ids ?? this.team2Ids,
       womenOnly: womenOnly ?? this.womenOnly,
+      winnerTeam: winnerTeam ?? this.winnerTeam,
     );
   }
 
@@ -176,7 +184,8 @@ class ReservationModel {
         other.team1Ids.every(team1Ids.contains) &&
         other.team2Ids.length == team2Ids.length &&
         other.team2Ids.every(team2Ids.contains) &&
-        other.womenOnly == womenOnly;
+        other.womenOnly == womenOnly &&
+        other.winnerTeam == winnerTeam;
   }
 
   @override
@@ -198,11 +207,12 @@ class ReservationModel {
         type.hashCode ^
         Object.hashAll(team1Ids) ^
         Object.hashAll(team2Ids) ^
-        womenOnly.hashCode;
+        womenOnly.hashCode ^
+        winnerTeam.hashCode;
   }
 
   @override
   String toString() {
-    return 'ReservationModel(id: $id, courtId: $courtId, clubId: $clubId, userId: $userId, participantIds: $participantIds, reservedDate: $reservedDate, startTime: $startTime, durationMinutes: $durationMinutes, createdAt: $createdAt, status: $status, paymentStatus: $paymentStatus, cancellationReason: $cancellationReason, price: $price, paidAmount: $paidAmount, type: $type, team1Ids: $team1Ids, team2Ids: $team2Ids, womenOnly: $womenOnly)';
+    return 'ReservationModel(id: $id, courtId: $courtId, clubId: $clubId, userId: $userId, participantIds: $participantIds, reservedDate: $reservedDate, startTime: $startTime, durationMinutes: $durationMinutes, createdAt: $createdAt, status: $status, paymentStatus: $paymentStatus, cancellationReason: $cancellationReason, price: $price, paidAmount: $paidAmount, type: $type, team1Ids: $team1Ids, team2Ids: $team2Ids, womenOnly: $womenOnly, winnerTeam: $winnerTeam)';
   }
 }
