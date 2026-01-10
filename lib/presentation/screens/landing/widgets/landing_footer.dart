@@ -67,12 +67,14 @@ class LandingFooter extends StatelessWidget {
             children: [
               Icon(Icons.sports_tennis, size: 16, color: colorScheme.primary),
               const SizedBox(width: 8),
-              Text(
-                '© 2024 Padel Punilla. Hecho con ❤️ en el Valle de Punilla.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurface.withValues(alpha: 0.5),
+              Expanded(
+                child: Text(
+                  '© 2024 Padel Punilla. Hecho con ❤️ en el Valle de Punilla.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -106,11 +108,14 @@ class LandingFooter extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Text(
-              'Padel Punilla',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
+            Flexible(
+              child: Text(
+                'Padel Punilla',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -118,8 +123,8 @@ class LandingFooter extends StatelessWidget {
         const SizedBox(height: 16),
 
         // Descripción
-        SizedBox(
-          width: 300,
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 300),
           child: Text(
             'La plataforma que conecta jugadores y clubes de pádel '
             'en el Valle de Punilla.',
@@ -127,6 +132,7 @@ class LandingFooter extends StatelessWidget {
               color: colorScheme.onSurface.withValues(alpha: 0.6),
               height: 1.5,
             ),
+            textAlign: TextAlign.center,
           ),
         ),
       ],

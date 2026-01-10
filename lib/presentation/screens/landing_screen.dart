@@ -51,11 +51,14 @@ class LandingScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            Text(
-              'Padel Punilla',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
+            Flexible(
+              child: Text(
+                'Padel Punilla',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
