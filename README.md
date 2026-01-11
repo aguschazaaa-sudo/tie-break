@@ -1,121 +1,135 @@
 # 🎾 Tie Break
 
-**La plataforma definitiva para reservas y ligas de pádel.**
+[![Flutter](https://img.shields.io/badge/Flutter-3.7.2-%2302569B?logo=flutter)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.0-%230175C2?logo=dart)](https://dart.dev)
+[![Architecture](https://img.shields.io/badge/Architecture-Clean-green)](https://github.com/resocoder/flutter-clean-architecture-proposal)
+[![Style](https://img.shields.io/badge/Style-Very_Good_Analysis-B22C11)](https://pub.dev/packages/very_good_analysis)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Tie Break es una aplicación móvil desarrollada en Flutter que permite a los jugadores de pádel reservar canchas, participar en partidos 2v2, unirse a partidos "falta uno", y competir en ligas con sistema de ranking.
+> **La plataforma definitiva para gestión de clubes y ligas de pádel amateur.**
 
----
-
-## ✨ Características
-
-### 🏟️ Gestión de Reservas
-- **Reservas normales**: Reserva una cancha para jugar con tus amigos
-- **Partidos 2v2**: Crea partidos competitivos con seguimiento de resultados
-- **Falta Uno**: Únete a partidos que necesitan un jugador más
-- **Timeline visual**: Visualiza la disponibilidad de canchas en tiempo real
-
-### 🏆 Sistema de Ligas
-- **Temporadas**: Competencias organizadas por temporadas
-- **Ranking ELO**: Sistema de puntuación dinámico basado en resultados
-- **Leaderboard**: Tabla de clasificación en tiempo real
-
-### 👤 Perfiles de Usuario
-- Autenticación con Google
-- Perfiles personalizados con nivel de juego y lateralidad
-- Historial de partidos y estadísticas
-
-### 🏢 Panel de Clubes
-- Gestión de canchas y horarios
-- Aprobación/rechazo de reservas
-- Configuración de precios por horario
+Tie Break no es solo una app de reservas; es una solución completa de gestión deportiva diseñada con una arquitectura escalable y robusta, enfocada en la experiencia de usuario y la integridad de los datos.
 
 ---
 
-## 🛠️ Tecnologías
+## 📱 Galería
 
-| Tecnología | Uso |
-|------------|-----|
-| **Flutter** | Framework de desarrollo móvil |
-| **Firebase Auth** | Autenticación de usuarios |
-| **Cloud Firestore** | Base de datos en tiempo real |
-| **Firebase Storage** | Almacenamiento de imágenes |
-| **Provider** | Gestión de estado |
+| Login / Auth | Landing & Dashboard |
+|:---:|:---:|
+| <img src="assets/images/login.png" width="300"> | <img src="assets/images/landing.png" width="300"> |
 
 ---
 
-## 🚀 Instalación
+## 💡 Ingeniería y Arquitectura
+
+Este proyecto fue desarrollado pensando en **escalabilidad y mantenibilidad**, simulando un entorno de producción real. No es solo código que funciona, es código diseñado para durar.
+
+### Características Técnicas Clave (The "Senior" Touch)
+
+*   **Clean Architecture**: Separación estricta de responsabilidades en capas (`Domain`, `Data`, `Presentation`). Esto permite cambiar la base de datos o la interfaz sin romper la lógica de negocio.
+*   **Programación Funcional (`fpdart`)**: Uso de tipos como `Either` para un manejo de errores robusto. No más `try-catch` dispersos; los errores son parte del flujo de datos tipado.
+*   **Testing Moderno**:
+    *   **Unit Tests**: Lógica de negocio blindada.
+    *   **Golden Tests**: Pruebas de regresión visual para asegurar pixel-perfection en cada commit (usando `golden_toolkit`).
+*   **Inyección de Dependencias**: Gestión de estado y dependencias desacopladas usando `Provider` y patrones de repositorio.
+
+### Diagrama de Arquitectura
+
+```mermaid
+graph TD
+    subgraph Presentation ["Capa de Presentación (UI)"]
+        UI[Widgets & Screens] --> Providers
+        Providers[State Management (Provider)]
+    end
+
+    subgraph Domain ["Capa de Dominio (Pure Dart)"]
+        Providers --> UseCases[Casos de Uso]
+        UseCases --> Repositories[Interfaces de Repositorios]
+        Entities[Entidades / Modelos]
+    end
+
+    subgraph Data ["Capa de Datos (Infraestructura)"]
+        Repositories -.-> RepoImpl[Implementación de Repositorios]
+        RepoImpl --> DataSources[Data Sources (Firebase/API)]
+        RepoImpl --> DTOs[DTOs & Mappers]
+    end
+
+    DataSources --> Firebase[(Cloud Firestore)]
+```
+
+---
+
+## ✨ Funcionalidades
+
+### 🏟️ Para Jugadores
+- **Reservas en Tiempo Real**: Sistema anti-colisiones para evitar doble reserva.
+- **Matchmaking (Falta Uno)**: Encuentra partidos que necesitan jugadores.
+- **Perfil de Jugador**: Estadísticas, nivel de juego y seguimiento de historial.
+
+### 🏢 Para Clubes (Administración)
+- **Dashboard de Gestión**: Control total sobre canchas y horarios.
+- **Aprobación de Reservas**: Flujo de validación para solicitudes.
+- **Reglas de Negocio**: Configuración de precios dinámicos y políticas de cancelación.
+
+---
+
+## 🛠️ Stack Tecnológico
+
+| Categoría | Tecnología | Justificación |
+|-----------|------------|---------------|
+| **Core** | Flutter & Dart | Desarrollo multiplataforma nativo de alto rendimiento. |
+| **Backend** | Firebase (Auth, Firestore) | Infraestructura serverless escalable en tiempo real. |
+| **Estado** | Provider | Gestión de estado eficiente y "Flutter-native". |
+| **Funcional** | fpdart | Manejo de errores seguro y pipelines de datos funcionales. |
+| **UI/UX** | Glassmorphism | Estética moderna y diferenciadora. |
+| **QA** | Mocktail & Golden Toolkit | Estrategia de testing completa (Unitario + Visual). |
+| **Linter** | Very Good Analysis | Estándares de código estrictos para máxima calidad. |
+
+---
+
+## 🚀 Cómo correr el proyecto
 
 ### Prerrequisitos
-- Flutter SDK ^3.7.2
-- Dart SDK
-- Cuenta de Firebase
+- Flutter SDK 3.7.2+
+- Configuración de Firebase propia (ver abajo)
 
-### Pasos
+### Instalación
 
-1. **Clona el repositorio**
+1. **Clonar repositorio**
    ```bash
    git clone https://github.com/aguschazaaa-sudo/tie-break.git
    cd tie-break
    ```
 
-2. **Instala las dependencias**
+2. **Instalar dependencias**
    ```bash
    flutter pub get
    ```
 
-3. **Configura Firebase**
-   - Crea un proyecto en [Firebase Console](https://console.firebase.google.com/)
-   - Descarga `google-services.json` (Android) y colócalo en `android/app/`
-   - Descarga `GoogleService-Info.plist` (iOS) y colócalo en `ios/Runner/`
-   - Ejecuta `flutterfire configure` para generar `lib/firebase_options.dart`
+3. **Configuración de Entorno**
+   El proyecto utiliza Firebase. Deberás configurar tu propio proyecto:
+   - Instala FlutterFire CLI.
+   - Ejecuta `flutterfire configure` y selecciona tu proyecto.
 
-4. **Ejecuta la aplicación**
+4. **Ejecutar**
    ```bash
    flutter run
    ```
 
----
-
-## 📁 Estructura del Proyecto
-
-```
-lib/
-├── config/           # Configuración (temas, rutas, constantes)
-├── domain/           # Modelos y Repositorios (Lógica de Negocio)
-├── presentation/     # Capa de presentación (screens, widgets)
-│   ├── screens/      # Pantallas de la app
-│   ├── widgets/      # Widgets reutilizables
-│   └── providers/    # Providers para gestión de estado
-└── main.dart         # Punto de entrada
-```
-
----
-
-## 🧪 Tests
-
-```bash
-# Ejecutar todos los tests
-flutter test
-
-# Ejecutar con cobertura
-flutter test --coverage
-```
+5. **Correr Tests**
+   ```bash
+   flutter test            # Unit tests
+   flutter test --update-goldens # Generar Goldens (si cambiaste UI)
+   ```
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
-
----
-
-## 👨‍💻 Autor
-
-Desarrollado con ❤️ para la comunidad de pádel.
+Este proyecto está bajo la Licencia MIT - siéntete libre de usarlo como base para tus propios proyectos.
 
 ---
 
 <p align="center">
-  <strong>¿Encontraste un bug? ¿Tienes una sugerencia?</strong><br>
-  <a href="https://github.com/aguschazaaa-sudo/tie-break/issues">Abre un issue</a>
+  <sub>Desarrollado con ❤️ y mucho ☕ por Agustín Chaza.</sub>
 </p>
