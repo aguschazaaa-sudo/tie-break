@@ -131,5 +131,5 @@ Este proyecto está bajo la Licencia MIT - siéntete libre de usarlo como base p
 ---
 
 <p align="center">
-  <sub>Desarrollado con ❤️ y mucho ☕ por Agustín Chaza.</sub>
+  <sub>Desarrollado con ❤️ y mucho ☕ por Agustín Chazarreta.</sub>
 </p>
