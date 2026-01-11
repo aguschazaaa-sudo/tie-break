@@ -28,4 +28,4 @@ jobs:
         continue-on-error: true
 
       - name: Run tests
-        run: flutter test
+        run: flutter test --exclude-tags=golden

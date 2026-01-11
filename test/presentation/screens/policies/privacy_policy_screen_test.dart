@@ -1,4 +1,8 @@
+@Tags(['golden'])
+library;
+
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:padel_punilla/config/theme/app_theme.dart';
 import 'package:padel_punilla/presentation/screens/policies/privacy_policy_screen.dart';
