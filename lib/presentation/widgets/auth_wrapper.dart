@@ -5,6 +5,12 @@ import 'package:padel_punilla/domain/repositories/auth_repository.dart';
 import 'package:padel_punilla/presentation/screens/home/home_screen.dart';
 import 'package:padel_punilla/presentation/screens/landing_screen.dart';
 
+/// Widget que decide qué pantalla mostrar según el estado de autenticación.
+///
+/// Maneja 3 estados:
+/// - **Waiting**: Muestra loading mientras verifica auth
+/// - **Authenticated**: Muestra HomeScreen
+/// - **Unauthenticated**: Muestra LandingScreen
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({required this.onToggleTheme, super.key});
   final VoidCallback onToggleTheme;
@@ -14,11 +20,24 @@ class AuthWrapper extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: context.read<AuthRepository>().authStateChanges,
       builder: (context, snapshot) {
-        // Si hay datos (usuario logueado), mostramos HomeScreen
+        // Estado de carga inicial
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        // Error en el stream - fallback a landing
+        if (snapshot.hasError) {
+          return LandingScreen(onToggleTheme: onToggleTheme);
+        }
+
+        // Usuario autenticado
         if (snapshot.hasData) {
           return const HomeScreen();
         }
-        // Si no hay datos (usuario no logueado), mostramos LandingScreen
+
+        // Usuario no autenticado
         return LandingScreen(onToggleTheme: onToggleTheme);
       },
     );
