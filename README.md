@@ -1,5 +1,6 @@
 # 🎾 Tie Break
 
+[![CI](https://github.com/aguschazaaa-sudo/tie-break/actions/workflows/flutter_ci.yml/badge.svg)](https://github.com/aguschazaaa-sudo/tie-break/actions/workflows/flutter_ci.yml)
 [![Flutter](https://img.shields.io/badge/Flutter-3.7.2-%2302569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.0-%230175C2?logo=dart)](https://dart.dev)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean-green)](https://github.com/resocoder/flutter-clean-architecture-proposal)
