@@ -150,7 +150,6 @@ class ClubSearchSection extends StatelessWidget {
       separatorBuilder: (context, index) => const SizedBox(height: 8),
       itemBuilder:
           (context, index) => const SkeletonLoader(
-            width: double.infinity,
             height: 72,
             borderRadius: BorderRadius.all(Radius.circular(24)),
           ),

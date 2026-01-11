@@ -3,14 +3,13 @@ import 'package:padel_punilla/domain/enums/reservation_enums.dart';
 import 'package:padel_punilla/domain/models/reservation_model.dart';
 
 class PaymentDialog extends StatefulWidget {
-  final ReservationModel reservation;
-  final Function(double, PaymentStatus) onUpdate;
-
   const PaymentDialog({
-    super.key,
     required this.reservation,
     required this.onUpdate,
+    super.key,
   });
+  final ReservationModel reservation;
+  final Function(double, PaymentStatus) onUpdate;
 
   @override
   State<PaymentDialog> createState() => _PaymentDialogState();
@@ -84,7 +83,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
               ),
               decoration: const InputDecoration(
                 labelText: 'Monto Abonado',
-                prefixText: '\$ ',
+                prefixText: r'$ ',
                 border: OutlineInputBorder(),
               ),
               onChanged: _updateAmount,

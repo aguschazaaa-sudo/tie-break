@@ -1,5 +1,5 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:padel_punilla/domain/enums/locality.dart';
 import 'package:padel_punilla/domain/enums/paddle_category.dart';
 import 'package:padel_punilla/domain/enums/player_gender.dart';
@@ -7,14 +7,14 @@ import 'package:padel_punilla/domain/repositories/auth_repository.dart';
 import 'package:padel_punilla/presentation/screens/auth/complete_profile_screen.dart';
 import 'package:padel_punilla/presentation/screens/auth/login_screen.dart';
 import 'package:padel_punilla/presentation/screens/home/home_screen.dart';
+import 'package:padel_punilla/presentation/screens/policies/privacy_policy_screen.dart';
+import 'package:padel_punilla/presentation/screens/policies/terms_conditions_screen.dart';
 import 'package:padel_punilla/presentation/widgets/ambient_glow.dart';
 import 'package:padel_punilla/presentation/widgets/auth_card.dart';
 import 'package:padel_punilla/presentation/widgets/custom_text_field.dart';
 import 'package:padel_punilla/presentation/widgets/primary_button.dart';
 import 'package:padel_punilla/presentation/widgets/secondary_button.dart';
-import 'package:padel_punilla/presentation/screens/policies/privacy_policy_screen.dart';
-import 'package:padel_punilla/presentation/screens/policies/terms_conditions_screen.dart';
-import 'package:flutter/gestures.dart';
+import 'package:provider/provider.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});

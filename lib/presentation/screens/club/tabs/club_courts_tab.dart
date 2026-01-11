@@ -3,8 +3,8 @@ import 'package:padel_punilla/domain/models/court_model.dart';
 import 'package:padel_punilla/domain/repositories/court_repository.dart';
 import 'package:padel_punilla/presentation/providers/club_management_provider.dart';
 import 'package:padel_punilla/presentation/screens/court/court_form_screen.dart';
-import 'package:padel_punilla/presentation/widgets/dialogs/payment_dialog.dart';
 import 'package:padel_punilla/presentation/widgets/dialogs/block_court_dialog.dart';
+import 'package:padel_punilla/presentation/widgets/dialogs/payment_dialog.dart';
 import 'package:padel_punilla/presentation/widgets/timeline/court_timeline_row.dart';
 import 'package:padel_punilla/presentation/widgets/timeline/reservation_action_sheet.dart';
 import 'package:padel_punilla/presentation/widgets/timeline/timeline_config.dart';
@@ -14,16 +14,15 @@ import 'package:padel_punilla/presentation/widgets/timeline/timeline_time_header
 import 'package:provider/provider.dart';
 
 class ClubCourtsTab extends StatefulWidget {
+  const ClubCourtsTab({required this.isDesktop, super.key});
   final bool isDesktop;
-
-  const ClubCourtsTab({super.key, required this.isDesktop});
 
   @override
   State<ClubCourtsTab> createState() => _ClubCourtsTabState();
 }
 
 class _ClubCourtsTabState extends State<ClubCourtsTab> {
-  final double _widthPerMinute = 2.0;
+  final double _widthPerMinute = 2;
   final int _startHour = 8;
   final int _endHour = 23;
   final double _rowHeight = 80;
@@ -333,7 +332,6 @@ class _ClubCourtsTabState extends State<ClubCourtsTab> {
       thumbVisibility: true,
       child: SingleChildScrollView(
         controller: _verticalController,
-        scrollDirection: Axis.vertical,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

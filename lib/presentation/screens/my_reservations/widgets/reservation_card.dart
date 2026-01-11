@@ -12,6 +12,14 @@ import 'package:padel_punilla/presentation/screens/my_reservations/widgets/reser
 /// - Badge de estado con color distintivo
 /// - Indicador de pago (si aplica)
 class ReservationCard extends StatelessWidget {
+  const ReservationCard({
+    required this.reservation,
+    super.key,
+    this.clubName,
+    this.courtName,
+    this.onTap,
+  });
+
   /// La reserva a mostrar
   final ReservationModel reservation;
 
@@ -23,14 +31,6 @@ class ReservationCard extends StatelessWidget {
 
   /// Callback al hacer tap en la card
   final VoidCallback? onTap;
-
-  const ReservationCard({
-    super.key,
-    required this.reservation,
-    this.clubName,
-    this.courtName,
-    this.onTap,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +55,6 @@ class ReservationCard extends StatelessWidget {
               isInactive
                   ? colorScheme.outlineVariant.withValues(alpha: 0.3)
                   : colorScheme.outlineVariant.withValues(alpha: 0.5),
-          width: 1,
         ),
       ),
       child: InkWell(

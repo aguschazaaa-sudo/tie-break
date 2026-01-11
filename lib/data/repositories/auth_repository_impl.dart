@@ -10,10 +10,6 @@ import 'package:padel_punilla/domain/models/user_model.dart';
 import 'package:padel_punilla/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final FirebaseAuth _auth;
-  final FirebaseFirestore _firestore;
-  final GoogleSignIn _googleSignIn;
-
   AuthRepositoryImpl({
     FirebaseAuth? auth,
     FirebaseFirestore? firestore,
@@ -21,6 +17,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }) : _auth = auth ?? FirebaseAuth.instance,
        _firestore = firestore ?? FirebaseFirestore.instance,
        _googleSignIn = googleSignIn ?? GoogleSignIn();
+  final FirebaseAuth _auth;
+  final FirebaseFirestore _firestore;
+  final GoogleSignIn _googleSignIn;
 
   @override
   Stream<User?> get authStateChanges => _auth.authStateChanges();

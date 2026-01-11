@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:padel_punilla/domain/models/season_model.dart';
 import 'package:padel_punilla/presentation/providers/club_management_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 class ClubSeasonsTab extends StatefulWidget {
+  const ClubSeasonsTab({required this.isDesktop, super.key});
   final bool isDesktop;
-
-  const ClubSeasonsTab({super.key, required this.isDesktop});
 
   @override
   State<ClubSeasonsTab> createState() => _ClubSeasonsTabState();

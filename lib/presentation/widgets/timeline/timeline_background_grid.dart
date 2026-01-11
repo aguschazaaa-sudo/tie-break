@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
 class TimelineBackgroundGrid extends StatelessWidget {
-  final double widthPerMinute;
-  final int startHour;
-  final int endHour;
-  final double height;
-
   const TimelineBackgroundGrid({
-    super.key,
     required this.widthPerMinute,
     required this.startHour,
     required this.endHour,
     required this.height,
+    super.key,
   });
+  final double widthPerMinute;
+  final int startHour;
+  final int endHour;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -31,17 +30,16 @@ class TimelineBackgroundGrid extends StatelessWidget {
 }
 
 class _GridPainter extends CustomPainter {
-  final double widthPerMinute;
-  final int startHour;
-  final int endHour;
-  final Color lineColor;
-
   _GridPainter({
     required this.widthPerMinute,
     required this.startHour,
     required this.endHour,
     required this.lineColor,
   });
+  final double widthPerMinute;
+  final int startHour;
+  final int endHour;
+  final Color lineColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -53,7 +51,7 @@ class _GridPainter extends CustomPainter {
     final hourWidth = widthPerMinute * 60;
 
     // Draw lines for each hour
-    for (int i = 0; i <= endHour - startHour + 1; i++) {
+    for (var i = 0; i <= endHour - startHour + 1; i++) {
       final x = i * hourWidth;
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }

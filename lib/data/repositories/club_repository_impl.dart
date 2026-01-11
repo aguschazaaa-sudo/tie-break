@@ -4,10 +4,9 @@ import 'package:padel_punilla/domain/models/club_model.dart';
 import 'package:padel_punilla/domain/repositories/club_repository.dart';
 
 class ClubRepositoryImpl implements ClubRepository {
-  final FirebaseFirestore _firestore;
-
   ClubRepositoryImpl({FirebaseFirestore? firestore})
     : _firestore = firestore ?? FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
 
   CollectionReference<Map<String, dynamic>> get _clubsCollection =>
       _firestore.collection('clubs');

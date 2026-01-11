@@ -31,7 +31,7 @@ class TermsConditionsScreen extends StatelessWidget {
 
             // Contenido principal con padding
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   // Sección 1: Aceptación
@@ -66,10 +66,10 @@ class TermsConditionsScreen extends StatelessWidget {
                   ),
 
                   // Sección 3: Reservas y Cancelaciones
-                  PolicySectionCard(
+                  const PolicySectionCard(
                     sectionNumber: '3',
                     title: 'Reservas y Cancelaciones',
-                    content: const PolicyBulletList(
+                    content: PolicyBulletList(
                       items: [
                         'Las reservas están sujetas a la disponibilidad de los clubes.',
                         'Las políticas de cancelación y reembolso son determinadas por '
@@ -82,11 +82,11 @@ class TermsConditionsScreen extends StatelessWidget {
                   ),
 
                   // Sección 4: Competencias, Ligas y Premios
-                  PolicySectionCard(
+                  const PolicySectionCard(
                     sectionNumber: '4',
                     title: 'Competencias, Ligas y Premios',
                     useSecondaryColor: true,
-                    content: const PolicyBulletList(
+                    content: PolicyBulletList(
                       items: [
                         'Puntajes: La aplicación gestiona tablas de puntuación para '
                             'ligas y torneos. Nos esforzamos por mantener la precisión, '

@@ -37,7 +37,6 @@ class ActiveSearchCard extends StatelessWidget {
       onTap: onTap,
       padding: const EdgeInsets.all(16),
       isGlass: true,
-      isShiny: false, // Desactivado por pedido del usuario
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

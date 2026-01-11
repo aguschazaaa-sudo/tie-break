@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:padel_punilla/domain/repositories/auth_repository.dart';
 import 'package:padel_punilla/presentation/screens/auth/complete_profile_screen.dart';
 import 'package:padel_punilla/presentation/screens/auth/signup_screen.dart';
@@ -9,6 +8,7 @@ import 'package:padel_punilla/presentation/widgets/auth_card.dart';
 import 'package:padel_punilla/presentation/widgets/custom_text_field.dart';
 import 'package:padel_punilla/presentation/widgets/primary_button.dart';
 import 'package:padel_punilla/presentation/widgets/secondary_button.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

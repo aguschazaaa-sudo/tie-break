@@ -99,7 +99,7 @@ void main() {
     group('copyWith womenOnly', () {
       test('should preserve womenOnly when not changed', () {
         final original = createBaseReservation(womenOnly: true);
-        final copied = original.copyWith(price: 6000.0);
+        final copied = original.copyWith(price: 6000);
 
         expect(copied.womenOnly, true);
         expect(copied.price, 6000.0);

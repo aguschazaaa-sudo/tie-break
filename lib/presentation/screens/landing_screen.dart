@@ -105,11 +105,7 @@ class LandingScreen extends StatelessWidget {
           Positioned(
             bottom: -100,
             left: -100,
-            child: AmbientGlow(
-              color: colorScheme.secondary,
-              size: 300,
-              opacity: 0.12,
-            ),
+            child: AmbientGlow(color: colorScheme.secondary, opacity: 0.12),
           ),
           // Glow adicional tertiary en el centro
           Positioned(
@@ -205,7 +201,6 @@ class LandingScreen extends StatelessWidget {
           BoxShadow(
             color: colorScheme.primary.withValues(alpha: 0.1),
             blurRadius: 40,
-            spreadRadius: 0,
           ),
         ],
       ),
@@ -382,7 +377,6 @@ class LandingScreen extends StatelessWidget {
                         icon: Icons.emoji_events,
                         color: colorScheme.tertiary,
                         isLarge: true,
-                        animationDelay: Duration.zero,
                         onTap:
                             () => _showModeInfo(
                               context,
@@ -475,7 +469,6 @@ class LandingScreen extends StatelessWidget {
                       icon: Icons.emoji_events,
                       color: colorScheme.tertiary,
                       isLarge: true,
-                      animationDelay: Duration.zero,
                       onTap:
                           () => _showModeInfo(
                             context,

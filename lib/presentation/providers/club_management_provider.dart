@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:padel_punilla/domain/enums/reservation_enums.dart';
 import 'package:padel_punilla/domain/enums/club_amenity.dart';
+import 'package:padel_punilla/domain/enums/reservation_enums.dart';
 import 'package:padel_punilla/domain/models/club_dashboard_stats.dart';
 import 'package:padel_punilla/domain/models/club_model.dart';
 import 'package:padel_punilla/domain/models/reservation_model.dart';
@@ -17,12 +17,6 @@ import 'package:padel_punilla/domain/repositories/storage_repository.dart';
 /// Incluye funcionalidades de admin como aprobar/rechazar/cancelar reservas,
 /// definir ganadores de partidos 2vs2, y gestionar pagos.
 class ClubManagementProvider extends ChangeNotifier {
-  final AuthRepository _authRepository;
-  final ClubRepository _clubRepository;
-  final ReservationRepository _reservationRepository;
-  final SeasonRepository _seasonRepository;
-  final StorageRepository _storageRepository;
-
   ClubManagementProvider({
     required AuthRepository authRepository,
     required ClubRepository clubRepository,
@@ -36,6 +30,11 @@ class ClubManagementProvider extends ChangeNotifier {
        _storageRepository = storageRepository {
     _loadClub();
   }
+  final AuthRepository _authRepository;
+  final ClubRepository _clubRepository;
+  final ReservationRepository _reservationRepository;
+  final SeasonRepository _seasonRepository;
+  final StorageRepository _storageRepository;
   // ... (existing code)
 
   /// Define el ganador de un partido 2vs2
@@ -60,8 +59,8 @@ class ClubManagementProvider extends ChangeNotifier {
             winningTeam == 1 ? reservation.team2Ids : reservation.team1Ids;
 
         // Puntos: Ganador +3, Perdedor +1
-        await _updatePlayersScore(activeSeason.id, winners, 3.0);
-        await _updatePlayersScore(activeSeason.id, losers, 1.0);
+        await _updatePlayersScore(activeSeason.id, winners, 3);
+        await _updatePlayersScore(activeSeason.id, losers, 1);
       }
     } catch (e) {
       debugPrint('Error updating scores: $e');
@@ -97,7 +96,7 @@ class ClubManagementProvider extends ChangeNotifier {
   ClubDashboardStats _dashboardStats = const ClubDashboardStats();
 
   /// Mapa de userId -> displayName para mostrar en el timeline
-  Map<String, String> _userNames = {};
+  final Map<String, String> _userNames = {};
 
   ClubModel? get club => _club;
   bool get isLoading => _isLoading;
@@ -464,9 +463,9 @@ class ClubManagementProvider extends ChangeNotifier {
   }
 
   void _calculateDailyStats() {
-    int total = _reservations.length;
+    final total = _reservations.length;
     double revenue = 0;
-    int pending = 0;
+    var pending = 0;
     final activeCourtsSet = <String>{};
 
     for (final r in _reservations) {

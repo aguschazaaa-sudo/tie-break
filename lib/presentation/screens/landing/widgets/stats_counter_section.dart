@@ -165,7 +165,6 @@ class _StatsCounterSectionState extends State<StatsCounterSection>
                     BoxShadow(
                       color: color.withValues(alpha: 0.3),
                       blurRadius: 16,
-                      spreadRadius: 0,
                     ),
                   ],
                 ),

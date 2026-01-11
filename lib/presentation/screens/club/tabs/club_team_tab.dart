@@ -7,9 +7,8 @@ import 'package:padel_punilla/presentation/widgets/user_search_dialog.dart';
 import 'package:provider/provider.dart';
 
 class ClubTeamTab extends StatelessWidget {
+  const ClubTeamTab({required this.isDesktop, super.key});
   final bool isDesktop;
-
-  const ClubTeamTab({super.key, required this.isDesktop});
 
   Future<void> _addHelper(BuildContext context) async {
     final provider = context.read<ClubManagementProvider>();

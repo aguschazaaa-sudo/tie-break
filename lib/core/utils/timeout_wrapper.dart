@@ -52,8 +52,8 @@ Future<T> withTimeout<T>(
 /// ```
 Future<T> withTimeoutOr<T>(
   Future<T> operation, {
-  Duration timeout = defaultTimeout,
   required T fallback,
+  Duration timeout = defaultTimeout,
 }) async {
   try {
     return await operation.timeout(timeout);

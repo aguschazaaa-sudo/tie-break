@@ -6,14 +6,14 @@ import 'package:padel_punilla/domain/repositories/auth_repository.dart';
 import 'package:padel_punilla/domain/repositories/club_repository.dart';
 import 'package:padel_punilla/presentation/screens/auth/login_screen.dart';
 import 'package:padel_punilla/presentation/screens/club/club_management_screen.dart';
+import 'package:padel_punilla/presentation/screens/policies/privacy_policy_screen.dart';
+import 'package:padel_punilla/presentation/screens/policies/terms_conditions_screen.dart';
 import 'package:padel_punilla/presentation/screens/profile/widgets/profile_header.dart';
 import 'package:padel_punilla/presentation/screens/profile/widgets/profile_stats.dart';
 import 'package:padel_punilla/presentation/widgets/ambient_glow.dart';
 import 'package:padel_punilla/presentation/widgets/surface_card.dart';
 import 'package:padel_punilla/presentation/widgets/user_list_dialog.dart';
 import 'package:padel_punilla/presentation/widgets/user_search_dialog.dart';
-import 'package:padel_punilla/presentation/screens/policies/privacy_policy_screen.dart';
-import 'package:padel_punilla/presentation/screens/policies/terms_conditions_screen.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {

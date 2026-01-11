@@ -142,7 +142,7 @@ class FavoriteClubsSection extends StatelessWidget {
         // Título skeleton
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
-          child: SkeletonLoader(width: 180, height: 20),
+          child: SkeletonLoader(width: 180),
         ),
         const SizedBox(height: 12),
 

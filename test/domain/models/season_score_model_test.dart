@@ -5,7 +5,7 @@ void main() {
   group('SeasonScoreModel', () {
     final seasonScore = SeasonScoreModel(
       userId: 'user1',
-      score: 100.0,
+      score: 100,
       matchesPlayed: 10,
       matchesWon: 5,
     );

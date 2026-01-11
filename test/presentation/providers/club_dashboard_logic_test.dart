@@ -110,7 +110,6 @@ void main() {
           createdAt: now,
           // Let's go with: Revenue = Sum of price of Approved reservations.
           price: 1500,
-          paidAmount: 0,
         ),
         ReservationModel(
           id: '3',

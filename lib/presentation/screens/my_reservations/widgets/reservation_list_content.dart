@@ -11,6 +11,14 @@ import 'package:padel_punilla/presentation/screens/my_reservations/widgets/reser
 /// - Más adelante
 /// - Pasadas
 class ReservationListContent extends StatelessWidget {
+  const ReservationListContent({
+    required this.reservations,
+    super.key,
+    this.clubNames = const {},
+    this.courtNames = const {},
+    this.onReservationTap,
+  });
+
   /// Lista de reservas a mostrar
   final List<ReservationModel> reservations;
 
@@ -22,14 +30,6 @@ class ReservationListContent extends StatelessWidget {
 
   /// Callback al hacer tap en una reserva
   final void Function(ReservationModel reservation)? onReservationTap;
-
-  const ReservationListContent({
-    super.key,
-    required this.reservations,
-    this.clubNames = const {},
-    this.courtNames = const {},
-    this.onReservationTap,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -248,12 +248,6 @@ class ReservationListContent extends StatelessWidget {
 
 /// Clase auxiliar para representar un grupo de reservas
 class _ReservationGroup {
-  final String title;
-  final IconData icon;
-  final List<ReservationModel> reservations;
-  final bool isHighlighted;
-  final bool isPast;
-
   const _ReservationGroup({
     required this.title,
     required this.icon,
@@ -261,4 +255,9 @@ class _ReservationGroup {
     this.isHighlighted = false,
     this.isPast = false,
   });
+  final String title;
+  final IconData icon;
+  final List<ReservationModel> reservations;
+  final bool isHighlighted;
+  final bool isPast;
 }

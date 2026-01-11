@@ -10,6 +10,18 @@ import 'package:padel_punilla/domain/models/reservation_model.dart';
 /// - Tipo 2vs2 y completo: Definir ganador
 /// - Siempre: Gestionar pago
 class ReservationActionSheet extends StatelessWidget {
+  const ReservationActionSheet({
+    required this.reservation,
+    super.key,
+    this.userName,
+    this.courtName,
+    this.onApprove,
+    this.onReject,
+    this.onCancel,
+    this.onSetWinner,
+    this.onManagePayment,
+  });
+
   /// La reserva sobre la que se realizarán acciones
   final ReservationModel reservation;
 
@@ -33,18 +45,6 @@ class ReservationActionSheet extends StatelessWidget {
 
   /// Callback para gestionar el pago
   final VoidCallback? onManagePayment;
-
-  const ReservationActionSheet({
-    super.key,
-    required this.reservation,
-    this.userName,
-    this.courtName,
-    this.onApprove,
-    this.onReject,
-    this.onCancel,
-    this.onSetWinner,
-    this.onManagePayment,
-  });
 
   /// Muestra el bottom sheet. Método estático de conveniencia.
   static Future<void> show(

@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 /// Incluye un ícono ilustrativo, mensaje descriptivo y un CTA
 /// opcional para realizar la primera reserva.
 class ReservationListEmpty extends StatelessWidget {
+  const ReservationListEmpty({super.key, this.onActionPressed});
+
   /// Callback al presionar el botón de acción (opcional)
   final VoidCallback? onActionPressed;
-
-  const ReservationListEmpty({super.key, this.onActionPressed});
 
   @override
   Widget build(BuildContext context) {

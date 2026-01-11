@@ -11,9 +11,8 @@ import 'package:provider/provider.dart';
 /// 1. Información General: nombre, teléfono, descripción, dirección
 /// 2. Horarios de Operación: gestión de horarios disponibles para reservas
 class ClubConfigTab extends StatefulWidget {
+  const ClubConfigTab({required this.isDesktop, super.key});
   final bool isDesktop;
-
-  const ClubConfigTab({super.key, required this.isDesktop});
 
   @override
   State<ClubConfigTab> createState() => _ClubConfigTabState();
@@ -377,7 +376,7 @@ class _ClubConfigTabState extends State<ClubConfigTab> {
                 onTap: _pickLogo,
                 customBorder: const CircleBorder(),
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8),
                   child: Icon(
                     Icons.camera_alt,
                     size: 20,

@@ -3,6 +3,13 @@ import 'package:padel_punilla/domain/enums/reservation_enums.dart';
 import 'package:padel_punilla/domain/models/court_model.dart';
 
 class BlockCourtDialog extends StatefulWidget {
+  const BlockCourtDialog({
+    required this.initialDate,
+    required this.onBlock,
+    required this.courts,
+    super.key,
+    this.initialCourtId,
+  });
   final DateTime initialDate;
   final String? initialCourtId;
   final Function(
@@ -14,14 +21,6 @@ class BlockCourtDialog extends StatefulWidget {
   )
   onBlock;
   final List<CourtModel> courts;
-
-  const BlockCourtDialog({
-    super.key,
-    required this.initialDate,
-    required this.onBlock,
-    required this.courts,
-    this.initialCourtId,
-  });
 
   @override
   State<BlockCourtDialog> createState() => _BlockCourtDialogState();

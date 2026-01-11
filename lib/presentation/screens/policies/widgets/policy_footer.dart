@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 /// Widget de pie de página para pantallas de políticas.
 /// Muestra información de contacto y última actualización.
 class PolicyFooter extends StatelessWidget {
+  const PolicyFooter({required this.lastUpdated, super.key, this.contactEmail});
+
   /// Fecha de última actualización
   final String lastUpdated;
 
   /// Email de contacto (opcional)
   final String? contactEmail;
-
-  const PolicyFooter({super.key, required this.lastUpdated, this.contactEmail});
 
   @override
   Widget build(BuildContext context) {

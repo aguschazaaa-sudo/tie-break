@@ -20,8 +20,8 @@ void main() {
         courtId: 'court1',
         clubId: 'club1',
         userId: 'user1',
-        reservedDate: DateTime(2025, 1, 1),
-        startTime: DateTime(2025, 1, 1, 10, 0),
+        reservedDate: DateTime(2025),
+        startTime: DateTime(2025, 1, 1, 10),
         durationMinutes: 90,
         createdAt: DateTime.now(),
         price: 1500,
@@ -55,8 +55,8 @@ void main() {
         courtId: 'court1',
         clubId: 'club1',
         userId: 'user1',
-        reservedDate: DateTime(2025, 1, 1),
-        startTime: DateTime(2025, 1, 1, 10, 0),
+        reservedDate: DateTime(2025),
+        startTime: DateTime(2025, 1, 1, 10),
         durationMinutes: 90,
         createdAt: DateTime.now(),
         price: 2000, // Changed
@@ -75,11 +75,11 @@ void main() {
     test('getReservationsByClubAndDate filters correctly', () async {
       final targetDate = DateTime(2025, 5, 20);
       // Start of target date
-      final d1 = DateTime(2025, 5, 20, 10, 0);
+      final d1 = DateTime(2025, 5, 20, 10);
       // End of target date
-      final d2 = DateTime(2025, 5, 20, 22, 0);
+      final d2 = DateTime(2025, 5, 20, 22);
       // Different date
-      final d3 = DateTime(2025, 5, 21, 10, 0);
+      final d3 = DateTime(2025, 5, 21, 10);
 
       // 1. Populate
       await fakeFirestore.collection('reservations').add({

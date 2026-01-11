@@ -3,6 +3,14 @@ import 'package:flutter/material.dart';
 /// Widget que representa una sección dentro de las políticas.
 /// Muestra un número/índice colorido, título destacado y contenido.
 class PolicySectionCard extends StatelessWidget {
+  const PolicySectionCard({
+    required this.sectionNumber,
+    required this.title,
+    required this.content,
+    super.key,
+    this.useSecondaryColor = false,
+  });
+
   /// Número o índice de la sección (ej: "1", "2", etc.)
   final String sectionNumber;
 
@@ -14,14 +22,6 @@ class PolicySectionCard extends StatelessWidget {
 
   /// Si la sección debe usar el color secundario (para alternar)
   final bool useSecondaryColor;
-
-  const PolicySectionCard({
-    required this.sectionNumber,
-    required this.title,
-    required this.content,
-    super.key,
-    this.useSecondaryColor = false,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -132,13 +132,13 @@ class PolicySectionCard extends StatelessWidget {
 
 /// Widget para mostrar una lista de puntos con bullets estilizados
 class PolicyBulletList extends StatelessWidget {
+  const PolicyBulletList({required this.items, super.key, this.bulletColor});
+
   /// Lista de textos para mostrar como bullets
   final List<String> items;
 
   /// Color del bullet (por defecto usa el primary)
   final Color? bulletColor;
-
-  const PolicyBulletList({required this.items, super.key, this.bulletColor});
 
   @override
   Widget build(BuildContext context) {

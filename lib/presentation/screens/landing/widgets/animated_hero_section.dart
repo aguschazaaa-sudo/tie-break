@@ -4,6 +4,13 @@ import 'package:padel_punilla/presentation/widgets/status_badge.dart';
 /// Hero section con animaciones staggered de entrada.
 /// Los elementos aparecen secuencialmente con un efecto elegante.
 class AnimatedHeroSection extends StatefulWidget {
+  const AnimatedHeroSection({
+    required this.onPlayerPressed,
+    required this.onClubPressed,
+    super.key,
+    this.centerContent = false,
+  });
+
   /// Si el contenido debe estar centrado (para mobile)
   final bool centerContent;
 
@@ -12,13 +19,6 @@ class AnimatedHeroSection extends StatefulWidget {
 
   /// Callback para el botón "Soy Club"
   final VoidCallback onClubPressed;
-
-  const AnimatedHeroSection({
-    super.key,
-    this.centerContent = false,
-    required this.onPlayerPressed,
-    required this.onClubPressed,
-  });
 
   @override
   State<AnimatedHeroSection> createState() => _AnimatedHeroSectionState();
@@ -43,7 +43,7 @@ class _AnimatedHeroSectionState extends State<AnimatedHeroSection>
     // Animaciones staggered - cada elemento aparece secuencialmente
     _badgeAnimation = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.0, 0.3, curve: Curves.easeOut),
+      curve: const Interval(0, 0.3, curve: Curves.easeOut),
     );
     _titleAnimation = CurvedAnimation(
       parent: _controller,
@@ -55,7 +55,7 @@ class _AnimatedHeroSectionState extends State<AnimatedHeroSection>
     );
     _buttonsAnimation = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.5, 1.0, curve: Curves.easeOut),
+      curve: const Interval(0.5, 1, curve: Curves.easeOut),
     );
 
     // Iniciar la animación

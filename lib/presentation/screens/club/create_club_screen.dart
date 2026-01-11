@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:padel_punilla/domain/enums/locality.dart';
 import 'package:padel_punilla/domain/models/club_model.dart';
@@ -12,6 +11,7 @@ import 'package:padel_punilla/presentation/widgets/auth_card.dart';
 import 'package:padel_punilla/presentation/widgets/custom_text_field.dart';
 import 'package:padel_punilla/presentation/widgets/gradient_background.dart';
 import 'package:padel_punilla/presentation/widgets/primary_button.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class CreateClubScreen extends StatefulWidget {

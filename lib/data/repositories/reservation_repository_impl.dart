@@ -4,10 +4,9 @@ import 'package:padel_punilla/domain/models/reservation_model.dart';
 import 'package:padel_punilla/domain/repositories/reservation_repository.dart';
 
 class ReservationRepositoryImpl implements ReservationRepository {
-  final FirebaseFirestore _firestore;
-
   ReservationRepositoryImpl({FirebaseFirestore? firestore})
     : _firestore = firestore ?? FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
 
   @override
   Future<void> createReservation(ReservationModel reservation) async {

@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:padel_punilla/domain/enums/locality.dart';
 import 'package:padel_punilla/domain/models/club_model.dart';
 import 'package:padel_punilla/domain/models/reservation_model.dart';
@@ -17,6 +16,7 @@ import 'package:padel_punilla/presentation/screens/my_reservations/my_reservatio
 import 'package:padel_punilla/presentation/screens/profile/profile_screen.dart';
 import 'package:padel_punilla/presentation/screens/season/leaderboard_screen.dart';
 import 'package:padel_punilla/presentation/widgets/ambient_glow.dart';
+import 'package:provider/provider.dart';
 
 /// Pantalla principal de la aplicación (Home).
 ///
@@ -136,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final nearbyLocalities = userLocality.nearbyLocalities;
       debugPrint('[HomeScreen] nearbyLocalities: $nearbyLocalities');
       final nearbyClubsFutures = nearbyLocalities.map(
-        (locality) => clubRepo.getClubsByLocality(locality),
+        clubRepo.getClubsByLocality,
       );
       final nearbyClubsLists = await Future.wait(nearbyClubsFutures);
       final nearbyClubs = nearbyClubsLists.expand((list) => list).toList();

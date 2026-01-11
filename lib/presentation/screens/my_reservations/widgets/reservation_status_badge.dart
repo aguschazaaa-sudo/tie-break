@@ -9,17 +9,17 @@ import 'package:padel_punilla/domain/enums/reservation_enums.dart';
 /// - Rechazada: error (rojo) - no aceptada
 /// - Cancelada: outline (gris) - inactiva
 class ReservationStatusBadge extends StatelessWidget {
+  const ReservationStatusBadge({
+    required this.status,
+    super.key,
+    this.size = 'medium',
+  });
+
   /// Estado de la reserva a mostrar
   final ReservationStatus status;
 
   /// Tamaño del badge: 'small' o 'medium'
   final String size;
-
-  const ReservationStatusBadge({
-    super.key,
-    required this.status,
-    this.size = 'medium',
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +41,7 @@ class ReservationStatusBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.background,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: colors.foreground.withValues(alpha: 0.3),
-          width: 1,
-        ),
+        border: Border.all(color: colors.foreground.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -104,13 +101,12 @@ class ReservationStatusBadge extends StatelessWidget {
 
 /// Clase auxiliar para agrupar colores e icono de un estado
 class _StatusColors {
-  final Color background;
-  final Color foreground;
-  final IconData icon;
-
   const _StatusColors({
     required this.background,
     required this.foreground,
     required this.icon,
   });
+  final Color background;
+  final Color foreground;
+  final IconData icon;
 }

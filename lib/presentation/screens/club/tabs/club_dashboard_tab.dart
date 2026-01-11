@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:padel_punilla/presentation/providers/club_management_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 class ClubDashboardTab extends StatefulWidget {
+  const ClubDashboardTab({required this.isDesktop, super.key});
   final bool isDesktop;
-
-  const ClubDashboardTab({super.key, required this.isDesktop});
 
   @override
   State<ClubDashboardTab> createState() => _ClubDashboardTabState();
@@ -69,7 +68,7 @@ class _ClubDashboardTabState extends State<ClubDashboardTab> {
                   context,
                   title: 'Ingresos Est.',
                   value: NumberFormat.currency(
-                    symbol: '\$',
+                    symbol: r'$',
                     decimalDigits: 0,
                   ).format(stats.totalRevenue),
                   icon: Icons.attach_money,

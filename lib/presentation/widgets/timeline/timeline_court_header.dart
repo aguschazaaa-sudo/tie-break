@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:padel_punilla/domain/models/court_model.dart';
 
 class TimelineCourtHeader extends StatelessWidget {
-  final CourtModel court;
-  final double width;
-
   const TimelineCourtHeader({
     required this.court,
     required this.width,
     super.key,
   });
+  final CourtModel court;
+  final double width;
 
   @override
   Widget build(BuildContext context) {

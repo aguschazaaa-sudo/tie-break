@@ -254,12 +254,6 @@ class _TestimonialCarouselState extends State<TestimonialCarousel> {
 
 /// Modelo interno para testimonios
 class _Testimonial {
-  final String name;
-  final String role;
-  final String text;
-  final Color avatarColor;
-  final int rating;
-
   const _Testimonial({
     required this.name,
     required this.role,
@@ -267,4 +261,9 @@ class _Testimonial {
     required this.avatarColor,
     required this.rating,
   });
+  final String name;
+  final String role;
+  final String text;
+  final Color avatarColor;
+  final int rating;
 }

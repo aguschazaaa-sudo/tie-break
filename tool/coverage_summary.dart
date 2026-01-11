@@ -17,10 +17,10 @@ void main() {
     if (line.startsWith('SF:')) {
       currentFile = line
           .substring(3)
-          .replaceAll('\\', '/'); // Standardize paths
+          .replaceAll(r'\', '/'); // Standardize paths
       // Make path relative to lib if possible for readability
       if (currentFile.contains('/lib/')) {
-        currentFile = 'lib/' + currentFile.split('/lib/').last;
+        currentFile = 'lib/${currentFile.split('/lib/').last}';
       }
       coverage[currentFile] = _FileCoverage(currentFile);
     } else if (line.startsWith('DA:')) {
@@ -71,8 +71,8 @@ void main() {
 }
 
 class _FileCoverage {
+  _FileCoverage(this.fileName);
   final String fileName;
   int totalLines = 0;
   int coveredLines = 0;
-  _FileCoverage(this.fileName);
 }

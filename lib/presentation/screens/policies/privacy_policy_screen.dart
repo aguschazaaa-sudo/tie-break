@@ -31,7 +31,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
             // Contenido principal con padding
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   // Sección 1: Información que Recopilamos

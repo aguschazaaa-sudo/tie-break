@@ -4,6 +4,17 @@ import 'package:padel_punilla/presentation/widgets/surface_card.dart';
 /// Bento card con animaciones de entrada y efectos hover.
 /// Escala ligeramente en hover y tiene un glow dinámico del color asignado.
 class AnimatedBentoCard extends StatefulWidget {
+  const AnimatedBentoCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    super.key,
+    this.isLarge = false,
+    this.onTap,
+    this.animationDelay = Duration.zero,
+  });
+
   /// Título de la card
   final String title;
 
@@ -24,17 +35,6 @@ class AnimatedBentoCard extends StatefulWidget {
 
   /// Delay para la animación de entrada (para stagger)
   final Duration animationDelay;
-
-  const AnimatedBentoCard({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.color,
-    this.isLarge = false,
-    this.onTap,
-    this.animationDelay = Duration.zero,
-  });
 
   @override
   State<AnimatedBentoCard> createState() => _AnimatedBentoCardState();
@@ -57,11 +57,11 @@ class _AnimatedBentoCardState extends State<AnimatedBentoCard>
 
     _scaleAnimation = Tween<double>(
       begin: 0.8,
-      end: 1.0,
+      end: 1,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
     _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
+      begin: 0,
+      end: 1,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     // Iniciar con delay para efecto staggered
@@ -116,7 +116,7 @@ class _AnimatedBentoCardState extends State<AnimatedBentoCard>
                   children: [
                     // Ícono con container animado
                     TweenAnimationBuilder<double>(
-                      tween: Tween(begin: 0.0, end: 1.0),
+                      tween: Tween(begin: 0, end: 1),
                       duration: Duration(
                         milliseconds:
                             800 + widget.animationDelay.inMilliseconds,

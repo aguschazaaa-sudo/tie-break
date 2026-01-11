@@ -8,6 +8,19 @@ import 'package:padel_punilla/presentation/widgets/timeline/timeline_reservation
 /// Muestra las reservas de la cancha posicionadas según su hora de inicio,
 /// con divisores de slots según [slotDurationMinutes].
 class CourtTimelineRow extends StatelessWidget {
+  const CourtTimelineRow({
+    required this.reservations,
+    required this.widthPerMinute,
+    required this.totalWidth,
+    super.key,
+    this.startHour = 8,
+    this.height = 60,
+    this.onReservationTap,
+    this.slotDurationMinutes = 90,
+    this.userNames = const {},
+    this.config = TimelineConfig.userView,
+  });
+
   /// Lista de reservas a mostrar en esta fila
   final List<ReservationModel> reservations;
 
@@ -35,24 +48,11 @@ class CourtTimelineRow extends StatelessWidget {
   /// Configuración de visualización del timeline
   final TimelineConfig config;
 
-  const CourtTimelineRow({
-    super.key,
-    required this.reservations,
-    required this.widthPerMinute,
-    required this.totalWidth,
-    this.startHour = 8,
-    this.height = 60,
-    this.onReservationTap,
-    this.slotDurationMinutes = 90,
-    this.userNames = const {},
-    this.config = TimelineConfig.userView,
-  });
-
   @override
   Widget build(BuildContext context) {
     // Genera divisores de slots para ayudar visualmente
     final totalMinutes = totalWidth / widthPerMinute;
-    final List<Widget> slotDividers = [];
+    final slotDividers = <Widget>[];
 
     for (var i = 0; i < totalMinutes; i += slotDurationMinutes) {
       final left = i * widthPerMinute;
@@ -76,7 +76,6 @@ class CourtTimelineRow extends StatelessWidget {
         border: Border(
           bottom: BorderSide(
             color: Theme.of(context).colorScheme.outlineVariant,
-            width: 1,
           ),
         ),
       ),

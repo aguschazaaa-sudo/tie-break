@@ -49,12 +49,7 @@ void main() {
             name: 'New Name',
             reservationPrice: 1000,
             isCovered: true,
-            surfaceType: CourtSurface.synthetic,
-            hasLighting: true,
-            sport: CourtSport.paddle,
             images: const ['image1.jpg'],
-            isAvailable: true,
-            slotDurationMinutes: 90,
           ),
         ),
       );

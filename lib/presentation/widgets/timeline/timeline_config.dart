@@ -3,6 +3,13 @@
 /// Permite reutilizar el timeline en diferentes contextos (admin vs usuario)
 /// controlando qué información y acciones se muestran.
 class TimelineConfig {
+  const TimelineConfig({
+    this.showUserName = false,
+    this.showAdminActions = false,
+    this.showReservationType = true,
+    this.showPaymentStatus = false,
+  });
+
   /// Si es true, muestra el nombre del usuario que hizo la reserva
   final bool showUserName;
 
@@ -15,26 +22,13 @@ class TimelineConfig {
   /// Si es true, muestra indicador de estado de pago
   final bool showPaymentStatus;
 
-  const TimelineConfig({
-    this.showUserName = false,
-    this.showAdminActions = false,
-    this.showReservationType = true,
-    this.showPaymentStatus = false,
-  });
-
   /// Configuración por defecto para vista de usuario normal
-  static const TimelineConfig userView = TimelineConfig(
-    showUserName: false,
-    showAdminActions: false,
-    showReservationType: true,
-    showPaymentStatus: false,
-  );
+  static const TimelineConfig userView = TimelineConfig();
 
   /// Configuración para vista de administrador del club
   static const TimelineConfig adminView = TimelineConfig(
     showUserName: true,
     showAdminActions: true,
-    showReservationType: true,
     showPaymentStatus: true,
   );
 }

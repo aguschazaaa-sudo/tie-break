@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 /// Widget decorativo para el encabezado de las pantallas de políticas.
 /// Muestra un ícono grande con gradiente y el título de la sección.
 class PolicyHeader extends StatelessWidget {
+  const PolicyHeader({
+    required this.icon,
+    required this.title,
+    super.key,
+    this.subtitle,
+  });
+
   /// Ícono principal del encabezado
   final IconData icon;
 
@@ -11,13 +18,6 @@ class PolicyHeader extends StatelessWidget {
 
   /// Subtítulo opcional (ej: "Última actualización: Diciembre 2025")
   final String? subtitle;
-
-  const PolicyHeader({
-    super.key,
-    required this.icon,
-    required this.title,
-    this.subtitle,
-  });
 
   @override
   Widget build(BuildContext context) {

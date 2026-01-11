@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:padel_punilla/domain/repositories/auth_repository.dart';
 import 'package:padel_punilla/presentation/screens/home/home_screen.dart';
 import 'package:padel_punilla/presentation/screens/landing_screen.dart';
+import 'package:provider/provider.dart';
 
 /// Widget que decide qué pantalla mostrar según el estado de autenticación.
 ///

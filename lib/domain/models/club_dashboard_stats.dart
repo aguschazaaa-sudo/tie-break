@@ -1,15 +1,14 @@
 class ClubDashboardStats {
-  final int totalReservations;
-  final double totalRevenue;
-  final int activeCourts;
-  final int pendingReservations;
-
   const ClubDashboardStats({
     this.totalReservations = 0,
     this.totalRevenue = 0.0,
     this.activeCourts = 0,
     this.pendingReservations = 0,
   });
+  final int totalReservations;
+  final double totalRevenue;
+  final int activeCourts;
+  final int pendingReservations;
 
   @override
   bool operator ==(Object other) {

@@ -37,7 +37,6 @@ class LandingFooter extends StatelessWidget {
                 );
               } else {
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     _buildBrandSection(context),
                     const SizedBox(height: 32),
@@ -140,9 +139,9 @@ class LandingFooter extends StatelessWidget {
   }
 
   Widget _buildLinksSection(BuildContext context) {
-    return _FooterColumn(
+    return const _FooterColumn(
       title: 'Recursos',
-      links: const [
+      links: [
         _FooterLink('Cómo funciona', null),
         _FooterLink('Clubes afiliados', null),
         _FooterLink('Liga y puntajes', null),
@@ -240,10 +239,9 @@ class LandingFooter extends StatelessWidget {
 
 /// Columna del footer con título y lista de links
 class _FooterColumn extends StatelessWidget {
+  const _FooterColumn({required this.title, required this.links});
   final String title;
   final List<_FooterLink> links;
-
-  const _FooterColumn({required this.title, required this.links});
 
   @override
   Widget build(BuildContext context) {
@@ -284,8 +282,7 @@ class _FooterColumn extends StatelessWidget {
 
 /// Modelo simple para un link del footer
 class _FooterLink {
+  const _FooterLink(this.label, this.onTap);
   final String label;
   final VoidCallback? onTap;
-
-  const _FooterLink(this.label, this.onTap);
 }
