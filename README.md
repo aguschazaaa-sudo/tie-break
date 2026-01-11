@@ -33,6 +33,10 @@ Este proyecto fue desarrollado pensando en **escalabilidad y mantenibilidad**, s
     *   **Unit Tests**: Lógica de negocio blindada.
     *   **Golden Tests**: Pruebas de regresión visual para asegurar pixel-perfection en cada commit (usando `golden_toolkit`).
 *   **Inyección de Dependencias**: Gestión de estado y dependencias desacopladas usando `Provider` y patrones de repositorio.
+*   **CI/CD con GitHub Actions**: Pipeline automatizado que ejecuta en cada push:
+    *   ✅ Verificación de formato de código (`dart format`)
+    *   ✅ Análisis estático (`flutter analyze`)
+    *   ✅ Ejecución de tests unitarios
 
 ### Diagrama de Arquitectura
 
