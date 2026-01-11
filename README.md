@@ -38,23 +38,23 @@ Este proyecto fue desarrollado pensando en **escalabilidad y mantenibilidad**, s
 ```mermaid
 graph TD
     subgraph Presentation ["Capa de Presentación (UI)"]
-        UI[Widgets & Screens] --> Providers
-        Providers[State Management (Provider)]
+        UI["Widgets & Screens"] --> Providers
+        Providers["State Management (Provider)"]
     end
 
     subgraph Domain ["Capa de Dominio (Pure Dart)"]
-        Providers --> UseCases[Casos de Uso]
-        UseCases --> Repositories[Interfaces de Repositorios]
-        Entities[Entidades / Modelos]
+        Providers --> UseCases["Casos de Uso"]
+        UseCases --> Repositories["Interfaces de Repositorios"]
+        Entities["Entidades / Modelos"]
     end
 
     subgraph Data ["Capa de Datos (Infraestructura)"]
-        Repositories -.-> RepoImpl[Implementación de Repositorios]
-        RepoImpl --> DataSources[Data Sources (Firebase/API)]
-        RepoImpl --> DTOs[DTOs & Mappers]
+        Repositories -.-> RepoImpl["Implementación de Repositorios"]
+        RepoImpl --> DataSources["Data Sources (Firebase/API)"]
+        RepoImpl --> DTOs["DTOs & Mappers"]
     end
 
-    DataSources --> Firebase[(Cloud Firestore)]
+    DataSources --> Firebase[("Cloud Firestore")]
 ```
 
 ---
