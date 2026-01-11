@@ -6,9 +6,9 @@ class TimelineCourtHeader extends StatelessWidget {
   final double width;
 
   const TimelineCourtHeader({
-    super.key,
     required this.court,
     required this.width,
+    super.key,
   });
 
   @override

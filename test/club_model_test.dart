@@ -2,7 +2,7 @@ import 'package:padel_punilla/domain/enums/locality.dart';
 import 'package:padel_punilla/domain/models/club_model.dart';
 
 void main() {
-  print('Verifying ClubModel Serialization...');
+  // Verifying ClubModel Serialization...
 
   final now = DateTime.now();
   final originalClub = ClubModel(
@@ -17,32 +17,40 @@ void main() {
     contactPhone: '123456789',
   );
 
-  print(
-    'Original Club: ${originalClub.name}, Locality: ${originalClub.locality.name}',
-  );
+  // Original Club: ${originalClub.name}, Locality: ${originalClub.locality.name}
 
   final map = originalClub.toMap();
-  print('Serialized Map: $map');
+  // Serialized Map: $map
 
   final deserializedClub = ClubModel.fromMap(map);
-  print(
-    'Deserialized Club: ${deserializedClub.name}, Locality: ${deserializedClub.locality.name}',
-  );
+  // Deserialized Club: ${deserializedClub.name}, Locality: ${deserializedClub.locality.name}
 
-  assert(originalClub.id == deserializedClub.id);
-  assert(originalClub.locality == deserializedClub.locality);
+  assert(originalClub.id == deserializedClub.id, 'IDs should match');
+  assert(
+    originalClub.locality == deserializedClub.locality,
+    'Localities should match',
+  );
   assert(
     originalClub.createdAt.toIso8601String() ==
         deserializedClub.createdAt.toIso8601String(),
+    'Dates should match',
   );
-  assert(originalClub.isApproved == deserializedClub.isApproved);
-  assert(originalClub.isApproved == false); // Default value check
-  assert(originalClub.availableSchedules.length == 6);
-  assert(originalClub.availableSchedules.contains('14:00'));
+  assert(
+    originalClub.isApproved == deserializedClub.isApproved,
+    'Approval status should match',
+  );
+  assert(originalClub.isApproved == false, 'Default approval should be false');
+  assert(
+    originalClub.availableSchedules.length == 6,
+    'Should have 6 schedules',
+  );
+  assert(
+    originalClub.availableSchedules.contains('14:00'),
+    'Should contain 14:00',
+  );
   assert(
     originalClub.availableSchedules.toString() ==
         deserializedClub.availableSchedules.toString(),
+    'Schedules should match',
   );
-
-  print('Verification Successful!');
 }

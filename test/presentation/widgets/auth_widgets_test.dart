@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:padel_punilla/config/theme/app_theme.dart';
+import 'package:padel_punilla/presentation/widgets/ambient_glow.dart';
 import 'package:padel_punilla/presentation/widgets/auth_card.dart';
 import 'package:padel_punilla/presentation/widgets/custom_text_field.dart';
 import 'package:padel_punilla/presentation/widgets/primary_button.dart';
 import 'package:padel_punilla/presentation/widgets/secondary_button.dart';
-import 'package:padel_punilla/presentation/widgets/ambient_glow.dart';
 
 void main() {
   testGoldens('Auth widgets golden test', (tester) async {
@@ -98,7 +98,7 @@ void main() {
             'AmbientGlow',
             Theme(
               data: AppTheme.lightTheme,
-              child: SizedBox(
+              child: const SizedBox(
                 width: 200,
                 height: 200,
                 child: AmbientGlow(color: Colors.blue),

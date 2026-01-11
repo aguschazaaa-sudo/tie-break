@@ -23,7 +23,6 @@ void main() {
       locality: Locality.villaCarlosPaz,
       createdAt: DateTime.now(),
       expiresAt: DateTime.now().add(const Duration(days: 365)),
-      isActive: true,
       availableSchedules: ['10:00', '11:00'],
     );
 

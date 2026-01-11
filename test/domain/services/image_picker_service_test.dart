@@ -29,7 +29,7 @@ void main() {
         when(
           () => mockPicker.pickImage(source: ImageSource.gallery),
         ).thenAnswer((_) async => mockFile);
-        when(() => mockFile.readAsBytes()).thenAnswer((_) async => testBytes);
+        when(mockFile.readAsBytes).thenAnswer((_) async => testBytes);
 
         // Act
         final result = await service.pickFromGallery();
@@ -75,7 +75,7 @@ void main() {
         when(
           () => mockPicker.pickImage(source: ImageSource.camera),
         ).thenAnswer((_) async => mockFile);
-        when(() => mockFile.readAsBytes()).thenAnswer((_) async => testBytes);
+        when(mockFile.readAsBytes).thenAnswer((_) async => testBytes);
 
         // Act
         final result = await service.pickFromCamera();

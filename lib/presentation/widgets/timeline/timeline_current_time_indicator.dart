@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class TimelineCurrentTimeIndicator extends StatelessWidget {
-  final int startHour;
-  final double widthPerMinute;
-  final double height;
-
   const TimelineCurrentTimeIndicator({
-    super.key,
     required this.startHour,
     required this.widthPerMinute,
     required this.height,
+    super.key,
   });
+
+  final int startHour;
+  final double widthPerMinute;
+  final double height;
 
   @override
   Widget build(BuildContext context) {

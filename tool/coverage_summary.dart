@@ -1,14 +1,16 @@
+// ignore_for_file: avoid_print, avoid_slow_async_io
+
 import 'dart:io';
 
-void main() async {
+void main() {
   final file = File('coverage/lcov.info');
-  if (!await file.exists()) {
+  if (!file.existsSync()) {
     print('Coverage file not found.');
     return;
   }
 
-  final lines = await file.readAsLines();
-  final Map<String, _FileCoverage> coverage = {};
+  final lines = file.readAsLinesSync();
+  final coverage = <String, _FileCoverage>{};
   String? currentFile;
 
   for (final line in lines) {
@@ -38,8 +40,8 @@ void main() async {
   );
   print('--------------------------------------------------');
 
-  int totalLinesProject = 0;
-  int coveredLinesProject = 0;
+  var totalLinesProject = 0;
+  var coveredLinesProject = 0;
   final sortedFiles = coverage.keys.toList()..sort();
 
   for (final fileName in sortedFiles) {

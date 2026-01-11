@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:padel_punilla/domain/enums/locality.dart';
+import 'package:padel_punilla/domain/enums/reservation_enums.dart';
 import 'package:padel_punilla/domain/models/club_model.dart';
 import 'package:padel_punilla/domain/models/reservation_model.dart';
 import 'package:padel_punilla/domain/models/season_model.dart';
-
 import 'package:padel_punilla/domain/models/user_model.dart';
 import 'package:padel_punilla/domain/repositories/auth_repository.dart';
 import 'package:padel_punilla/domain/repositories/club_repository.dart';
@@ -12,8 +13,6 @@ import 'package:padel_punilla/domain/repositories/reservation_repository.dart';
 import 'package:padel_punilla/domain/repositories/season_repository.dart';
 import 'package:padel_punilla/domain/repositories/storage_repository.dart';
 import 'package:padel_punilla/presentation/providers/club_management_provider.dart';
-import 'package:padel_punilla/domain/enums/reservation_enums.dart';
-import 'package:padel_punilla/domain/enums/locality.dart';
 
 // Mocks
 class MockAuthRepository extends Mock implements AuthRepository {}
@@ -111,7 +110,7 @@ void main() {
       );
 
       // Async init wait
-      await Future.delayed(const Duration(milliseconds: 1000));
+      await Future<void>.delayed(const Duration(milliseconds: 1000));
     });
 
     test(
@@ -144,7 +143,7 @@ void main() {
 
         // Reload to populate provider
         provider.setSelectedDate(DateTime.now());
-        await Future.delayed(const Duration(milliseconds: 1000));
+        await Future<void>.delayed(const Duration(milliseconds: 1000));
 
         // 2. Setup Active Season
         final season = SeasonModel(
@@ -182,20 +181,12 @@ void main() {
         expect(captured.winnerTeam, 1);
 
         // Winners +3
-        verify(
-          () => seasonRepo.updateUserScore('season1', 'p1', 3.0),
-        ).called(1);
-        verify(
-          () => seasonRepo.updateUserScore('season1', 'p2', 3.0),
-        ).called(1);
+        verify(() => seasonRepo.updateUserScore('season1', 'p1', 3)).called(1);
+        verify(() => seasonRepo.updateUserScore('season1', 'p2', 3)).called(1);
 
         // Losers +1
-        verify(
-          () => seasonRepo.updateUserScore('season1', 'p3', 1.0),
-        ).called(1);
-        verify(
-          () => seasonRepo.updateUserScore('season1', 'p4', 1.0),
-        ).called(1);
+        verify(() => seasonRepo.updateUserScore('season1', 'p3', 1)).called(1);
+        verify(() => seasonRepo.updateUserScore('season1', 'p4', 1)).called(1);
       },
     );
 

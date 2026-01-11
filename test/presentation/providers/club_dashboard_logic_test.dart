@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:padel_punilla/domain/models/club_dashboard_stats.dart';
+import 'package:padel_punilla/domain/enums/locality.dart';
+import 'package:padel_punilla/domain/enums/reservation_enums.dart';
 import 'package:padel_punilla/domain/models/club_model.dart';
 import 'package:padel_punilla/domain/models/reservation_model.dart';
 import 'package:padel_punilla/domain/repositories/auth_repository.dart';
@@ -10,8 +11,6 @@ import 'package:padel_punilla/domain/repositories/reservation_repository.dart';
 import 'package:padel_punilla/domain/repositories/season_repository.dart';
 import 'package:padel_punilla/domain/repositories/storage_repository.dart';
 import 'package:padel_punilla/presentation/providers/club_management_provider.dart';
-import 'package:padel_punilla/domain/enums/reservation_enums.dart';
-import 'package:padel_punilla/domain/enums/locality.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 
@@ -78,7 +77,9 @@ void main() {
         storageRepository: storageRepo,
       );
 
-      await Future.delayed(const Duration(milliseconds: 1000)); // Init wait
+      await Future<void>.delayed(
+        const Duration(milliseconds: 1000),
+      ); // Init wait
     });
 
     test('loadDailyStats calculates correctly', () async {
@@ -107,13 +108,6 @@ void main() {
           startTime: now,
           durationMinutes: 60,
           createdAt: now,
-          status:
-              ReservationStatus
-                  .pending, // Pending also counts for revenue forecast? Or only approved?
-          // Let's say Pending counts as logic: "Potential Revenue" vs "Realized".
-          // For this test, let's assume we want TOTAL stats.
-          // Or separate.
-          // Let's assume dashboard shows: Total Reservations (All valid), Revenue (Paid Only or Total Price of Approved?).
           // Let's go with: Revenue = Sum of price of Approved reservations.
           price: 1500,
           paidAmount: 0,

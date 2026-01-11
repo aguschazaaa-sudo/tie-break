@@ -11,6 +11,16 @@ import 'package:padel_punilla/presentation/widgets/timeline/timeline_config.dart
 /// - Incompleta (2vs2/falta1 sin completar): tenue/transparente
 class TimelineReservationCard extends StatelessWidget {
   /// La reserva a mostrar
+  const TimelineReservationCard({
+    required this.reservation,
+    required this.widthPerMinute,
+    super.key,
+    this.onTap,
+    this.userName,
+    this.config = TimelineConfig.userView,
+  });
+
+  /// La reserva a mostrar
   final ReservationModel reservation;
 
   /// Píxeles por minuto para calcular el ancho
@@ -24,15 +34,6 @@ class TimelineReservationCard extends StatelessWidget {
 
   /// Configuración de visualización del timeline
   final TimelineConfig config;
-
-  const TimelineReservationCard({
-    super.key,
-    required this.reservation,
-    required this.widthPerMinute,
-    this.onTap,
-    this.userName,
-    this.config = TimelineConfig.userView,
-  });
 
   /// El color base según el tipo de reserva
   Color _getTypeColor(BuildContext context) {
@@ -96,7 +97,7 @@ class TimelineReservationCard extends StatelessWidget {
     // Pendientes -> semi-transparente (0.7)
     // Aprobadas -> sólido (1.0)
     // Bloqueadas -> sólido
-    double opacity = 1.0;
+    var opacity = 1.0;
     if (isIncomplete) {
       opacity = 0.4;
     } else if (isPending) {
@@ -108,15 +109,10 @@ class TimelineReservationCard extends StatelessWidget {
     if (isPending && !isIncomplete) {
       border = Border.all(color: Colors.orange.shade700, width: 2);
     } else if (isIncomplete) {
-      border = Border.all(
-        color: textColor.withValues(alpha: 0.3),
-        width: 1,
-        style: BorderStyle.solid,
-      );
+      border = Border.all(color: textColor.withValues(alpha: 0.3));
     } else if (reservation.type == ReservationType.maintenance) {
       border = Border.all(
         color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
-        width: 1,
       );
     }
 

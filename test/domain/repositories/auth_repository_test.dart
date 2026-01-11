@@ -1,8 +1,8 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:padel_punilla/data/repositories/auth_repository_impl.dart';
 
 // Mocks
@@ -40,8 +40,8 @@ void main() {
       'signInWithEmailAndPassword should return UserCredential on success',
       () async {
         // Arrange
-        final email = 'test@test.com';
-        final password = 'password123';
+        const email = 'test@test.com';
+        const password = 'password123';
         final mockCredential = MockUserCredential();
 
         when(
@@ -72,8 +72,8 @@ void main() {
       'signInWithEmailAndPassword should throw exception with friendly message on auth error',
       () async {
         // Arrange
-        final email = 'test@test.com';
-        final password = 'password123';
+        const email = 'test@test.com';
+        const password = 'password123';
 
         when(
           () => mockAuth.signInWithEmailAndPassword(

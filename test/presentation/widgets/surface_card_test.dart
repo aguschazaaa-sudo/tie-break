@@ -1,8 +1,7 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:padel_punilla/presentation/widgets/surface_card.dart';
 import 'package:padel_punilla/presentation/widgets/shimmer_overlay.dart';
+import 'package:padel_punilla/presentation/widgets/surface_card.dart';
 
 void main() {
   group('SurfaceCard', () {
@@ -17,7 +16,7 @@ void main() {
     });
 
     testWidgets('executes onTap callback', (tester) async {
-      bool tapped = false;
+      var tapped = false;
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

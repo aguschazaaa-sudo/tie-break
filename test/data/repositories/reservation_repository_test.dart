@@ -25,7 +25,6 @@ void main() {
         durationMinutes: 90,
         createdAt: DateTime.now(),
         price: 1500,
-        status: ReservationStatus.pending,
       );
 
       await repository.createReservation(reservation);

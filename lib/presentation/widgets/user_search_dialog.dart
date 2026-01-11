@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 class UserSearchDialog extends StatefulWidget {
   const UserSearchDialog({super.key, this.onUserSelected});
-  final Function(UserModel)? onUserSelected;
+  final void Function(UserModel)? onUserSelected;
 
   @override
   State<UserSearchDialog> createState() => _UserSearchDialogState();

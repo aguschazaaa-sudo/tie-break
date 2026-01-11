@@ -22,7 +22,7 @@ void main() {
         startTime: baseDate,
         durationMinutes: 90,
         createdAt: createdAt,
-        price: 5000.0,
+        price: 5000,
         type: type,
         womenOnly: womenOnly,
       );
@@ -39,7 +39,7 @@ void main() {
           startTime: baseDate,
           durationMinutes: 60,
           createdAt: createdAt,
-          price: 3000.0,
+          price: 3000,
         );
 
         expect(reservation.womenOnly, false);
@@ -106,7 +106,7 @@ void main() {
       });
 
       test('should update womenOnly when changed', () {
-        final original = createBaseReservation(womenOnly: false);
+        final original = createBaseReservation();
         final copied = original.copyWith(womenOnly: true);
 
         expect(copied.womenOnly, true);
@@ -115,7 +115,7 @@ void main() {
 
     group('equality', () {
       test('reservations with different womenOnly should not be equal', () {
-        final reservation1 = createBaseReservation(womenOnly: false);
+        final reservation1 = createBaseReservation();
         final reservation2 = createBaseReservation(womenOnly: true);
 
         expect(reservation1 == reservation2, false);
@@ -133,7 +133,7 @@ void main() {
       test(
         'reservations with different womenOnly should have different hashCodes',
         () {
-          final reservation1 = createBaseReservation(womenOnly: false);
+          final reservation1 = createBaseReservation();
           final reservation2 = createBaseReservation(womenOnly: true);
 
           expect(reservation1.hashCode == reservation2.hashCode, false);
@@ -173,10 +173,7 @@ void main() {
 
       test('womenOnly can be set for normal type (edge case)', () {
         // Aunque no tiene sentido lógico, el modelo lo permite
-        final reservation = createBaseReservation(
-          type: ReservationType.normal,
-          womenOnly: true,
-        );
+        final reservation = createBaseReservation(womenOnly: true);
 
         expect(reservation.type, ReservationType.normal);
         expect(reservation.womenOnly, true);
@@ -194,14 +191,14 @@ void main() {
           startTime: baseDate,
           durationMinutes: 120,
           createdAt: createdAt,
-          price: 7500.0,
+          price: 7500,
           type: ReservationType.match2vs2,
           status: ReservationStatus.approved,
           paymentStatus: PaymentStatus.paid,
           team1Ids: ['user_a', 'user_b'],
           team2Ids: ['user_c', 'user_d'],
           womenOnly: true,
-          paidAmount: 7500.0,
+          paidAmount: 7500,
         );
 
         final map = original.toMap();

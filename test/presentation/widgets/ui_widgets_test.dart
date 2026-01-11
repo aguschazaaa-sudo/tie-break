@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:padel_punilla/config/theme/app_theme.dart';
-import 'package:padel_punilla/presentation/widgets/skeleton_loader.dart';
-import 'package:padel_punilla/presentation/widgets/shimmer_overlay.dart';
 import 'package:padel_punilla/presentation/widgets/gradient_background.dart';
+import 'package:padel_punilla/presentation/widgets/shimmer_overlay.dart';
+import 'package:padel_punilla/presentation/widgets/skeleton_loader.dart';
 
 void main() {
   testGoldens('UI widgets golden test', (tester) async {

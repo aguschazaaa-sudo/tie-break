@@ -9,10 +9,10 @@ import 'package:provider/provider.dart';
 /// [genderFilter] - Si se especifica, solo se permitirán usuarios de ese género.
 /// Por ejemplo, para reservas "solo mujeres" se pasa [PlayerGender.female].
 class UserSelectionDialog extends StatelessWidget {
+  const UserSelectionDialog({super.key, this.genderFilter});
+
   /// Filtro de género opcional. Si es null, se aceptan todos los géneros.
   final PlayerGender? genderFilter;
-
-  const UserSelectionDialog({super.key, this.genderFilter});
 
   @override
   Widget build(BuildContext context) {
@@ -70,8 +70,8 @@ class UserSelectionDialog extends StatelessWidget {
 }
 
 class _SearchTab extends StatefulWidget {
-  final PlayerGender? genderFilter;
   const _SearchTab({this.genderFilter});
+  final PlayerGender? genderFilter;
 
   @override
   State<_SearchTab> createState() => _SearchTabState();
@@ -167,8 +167,8 @@ class _SearchTabState extends State<_SearchTab> {
 }
 
 class _FollowingTab extends StatelessWidget {
-  final PlayerGender? genderFilter;
   const _FollowingTab({this.genderFilter});
+  final PlayerGender? genderFilter;
 
   @override
   Widget build(BuildContext context) {

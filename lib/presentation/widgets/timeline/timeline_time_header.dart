@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class TimelineTimeHeader extends StatelessWidget {
-  final double widthPerMinute;
-  final int startHour;
-  final int endHour;
-
   const TimelineTimeHeader({
-    super.key,
     required this.widthPerMinute,
     this.startHour = 8,
     this.endHour = 23,
+    super.key,
   });
+
+  final double widthPerMinute;
+  final int startHour;
+  final int endHour;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,6 @@ class TimelineTimeHeader extends StatelessWidget {
         ),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: List.generate(endHour - startHour + 1, (index) {
           final hour = startHour + index;
           return SizedBox(
