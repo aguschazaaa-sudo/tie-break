@@ -76,3 +76,55 @@ jobs:
 
       - name: Run tests
         run: flutter test --exclude-tags=golden
+
+      - name: Dependency audit (outdated packages)
+        run: |
+          echo "📦 Dependency Audit Report" > dependency-audit.txt
+          echo "=========================" >> dependency-audit.txt
+          echo "" >> dependency-audit.txt
+          dart pub outdated >> dependency-audit.txt 2>&1 || true
+          cat dependency-audit.txt
+        continue-on-error: true
+
+      - name: Install DCM (Dart Code Metrics)
+        run: dart pub global activate dart_code_metrics
+        continue-on-error: true
+
+      - name: Check unused code
+        run: |
+          export PATH="$PATH:$HOME/.pub-cache/bin"
+          echo "🔍 Unused Code Report" > unused-code-report.txt
+          echo "=====================" >> unused-code-report.txt
+          echo "" >> unused-code-report.txt
+          dcm check-unused-code lib --no-fatal-unused >> unused-code-report.txt 2>&1 || true
+          cat unused-code-report.txt
+        continue-on-error: true
+
+      - name: Check unused files
+        run: |
+          export PATH="$PATH:$HOME/.pub-cache/bin"
+          echo "📄 Unused Files Report" > unused-files-report.txt
+          echo "======================" >> unused-files-report.txt
+          echo "" >> unused-files-report.txt
+          dcm check-unused-files lib --no-fatal-unused >> unused-files-report.txt 2>&1 || true
+          cat unused-files-report.txt
+        continue-on-error: true
+
+      - name: Upload security report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-report
+          path: trivy-results.json
+          retention-days: 30
+
+      - name: Upload code quality reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: code-quality-reports
+          path: |
+            dependency-audit.txt
+            unused-code-report.txt
+            unused-files-report.txt
+          retention-days: 30
