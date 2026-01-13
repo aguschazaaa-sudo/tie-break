@@ -214,6 +214,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Create firebase_options.dart from secret
+        run: |
+          echo "${{ secrets.FIREBASE_OPTIONS_DART }}" | base64 -d > lib/firebase_options.dart
+          echo "✅ firebase_options.dart created"
+
       - name: Build APK
         run: flutter build apk --debug --no-tree-shake-icons
         continue-on-error: false
