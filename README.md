@@ -1,6 +1,6 @@
 # 🎾 Tie Break
 
-[![CI](https://github.com/aguschazaaa-sudo/tie-break/actions/workflows/flutter_ci.yml/badge.svg)](https://github.com/aguschazaaa-sudo/tie-break/actions/workflows/flutter_ci.yml)
+[![CI](https://github.com/aguschazaaa-sudo/tie-break/actions/workflows/ci.yml/badge.svg)](https://github.com/aguschazaaa-sudo/tie-break/actions/workflows/ci.yml)
 [![Flutter](https://img.shields.io/badge/Flutter-3.7.2-%2302569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.0-%230175C2?logo=dart)](https://dart.dev)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean-green)](https://github.com/resocoder/flutter-clean-architecture-proposal)
@@ -25,7 +25,7 @@ Tie Break no es solo una app de reservas; es una solución completa de gestión 
 
 Este proyecto fue desarrollado pensando en **escalabilidad y mantenibilidad**, simulando un entorno de producción real. No es solo código que funciona, es código diseñado para durar.
 
-### Características Técnicas Clave (The "Senior" Touch)
+### Características Técnicas Clave
 
 *   **Clean Architecture**: Separación estricta de responsabilidades en capas (`Domain`, `Data`, `Presentation`). Esto permite cambiar la base de datos o la interfaz sin romper la lógica de negocio.
 *   **Programación Funcional (`fpdart`)**: Uso de tipos como `Either` para un manejo de errores robusto. No más `try-catch` dispersos; los errores son parte del flujo de datos tipado.
@@ -33,10 +33,32 @@ Este proyecto fue desarrollado pensando en **escalabilidad y mantenibilidad**, s
     *   **Unit Tests**: Lógica de negocio blindada.
     *   **Golden Tests**: Pruebas de regresión visual para asegurar pixel-perfection en cada commit (usando `golden_toolkit`).
 *   **Inyección de Dependencias**: Gestión de estado y dependencias desacopladas usando `Provider` y patrones de repositorio.
-*   **CI/CD con GitHub Actions**: Pipeline automatizado que ejecuta en cada push:
-    *   ✅ Verificación de formato de código (`dart format`)
-    *   ✅ Análisis estático (`flutter analyze`)
-    *   ✅ Ejecución de tests unitarios
+
+### 🔄 Pipeline de CI/CD
+
+Pipeline automatizado con **GitHub Actions** que ejecuta en cada push/PR:
+
+```mermaid
+graph LR
+    A[🔨 Build & Test] --> B[🔒 Security]
+    A --> C[📦 Dependencies]
+    A --> D[🔍 Code Quality]
+    A --> E[📱 Build APK]
+    E --> F[🛡️ MobSF]
+```
+
+| Stage | Herramienta | Descripción |
+|-------|-------------|-------------|
+| **Build & Test** | Flutter | Formato, análisis estático, tests unitarios |
+| **Security** | Trivy | Escaneo de vulnerabilidades (CVEs) con umbrales configurables |
+| **Dependencies** | Dart Pub | Auditoría de paquetes desactualizados |
+| **Code Quality** | DCM | Detección de código y archivos sin usar |
+| **Build APK** | Flutter + Gradle | Compilación del APK con secrets de Firebase |
+| **MobSF** | Docker | Análisis de seguridad estático del APK (SAST) |
+
+**Artifacts generados**: Reportes de seguridad, calidad de código y el APK compilado.
+
+> **Nota**: Los archivos de workflow usan el patrón de *Reusable Workflows* para mantener modularidad sin perder la visualización unificada del pipeline.
 
 ### Diagrama de Arquitectura
 
