@@ -1,0 +1,44 @@
+name: Dependency Audit
+
+on:
+  workflow_run:
+    workflows: ["Build & Test"]
+    types: [completed]
+    branches: [ "main", "master" ]
+
+jobs:
+  dependencies:
+    name: 📦 Dependency Audit
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check outdated packages
+        run: |
+          echo "📦 Dependency Audit Report" > dependency-audit.txt
+          echo "=========================" >> dependency-audit.txt
+          echo "" >> dependency-audit.txt
+          echo "=== Outdated Packages ===" >> dependency-audit.txt
+          dart pub outdated >> dependency-audit.txt 2>&1 || true
+          echo "" >> dependency-audit.txt
+          echo "=== Dependency Tree ===" >> dependency-audit.txt
+          dart pub deps >> dependency-audit.txt 2>&1 || true
+          cat dependency-audit.txt
+        continue-on-error: true
+
+      - name: Upload dependency report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-report
+          path: dependency-audit.txt
+          retention-days: 30

@@ -1,0 +1,150 @@
+name: Mobile Security (MobSF)
+
+on:
+  workflow_run:
+    workflows: ["Build & Test"]
+    types: [completed]
+    branches: [ "main", "master" ]
+
+jobs:
+  build-apk:
+    name: 📱 Build APK
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Create firebase_options.dart from secret
+        run: |
+          echo "${{ secrets.FIREBASE_OPTIONS_DART }}" | base64 -d > lib/firebase_options.dart
+          echo "✅ firebase_options.dart created"
+
+      - name: Create google-services.json from secret
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
+          echo "✅ google-services.json created"
+
+      - name: Build APK
+        run: flutter build apk --debug --no-tree-shake-icons
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
+
+  mobsf-scan:
+    name: 🛡️ MobSF Analysis
+    runs-on: ubuntu-latest
+    needs: build-apk
+
+    steps:
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: debug-apk
+          path: ./apk
+
+      - name: Start MobSF
+        run: |
+          docker pull opensecurity/mobile-security-framework-mobsf:latest
+          docker run -d --name mobsf -p 8000:8000 opensecurity/mobile-security-framework-mobsf:latest
+          echo "⏳ Waiting for MobSF to start..."
+          sleep 30
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/api/v1/scans -H "Authorization: 1234567890" > /dev/null 2>&1; then
+              echo "✅ MobSF is ready!"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 5
+          done
+
+      - name: Upload APK to MobSF
+        id: upload
+        run: |
+          APK_PATH="./apk/app-debug.apk"
+          
+          echo "📤 Uploading APK to MobSF..."
+          UPLOAD_RESPONSE=$(curl -s -X POST \
+            -H "Authorization: 1234567890" \
+            -F "file=@$APK_PATH" \
+            http://localhost:8000/api/v1/upload)
+          
+          echo "Upload response: $UPLOAD_RESPONSE"
+          
+          HASH=$(echo $UPLOAD_RESPONSE | jq -r '.hash')
+          echo "hash=$HASH" >> $GITHUB_OUTPUT
+          echo "📦 APK Hash: $HASH"
+
+      - name: Run MobSF Scan
+        run: |
+          HASH="${{ steps.upload.outputs.hash }}"
+          
+          echo "🔍 Starting security scan..."
+          curl -s -X POST \
+            -H "Authorization: 1234567890" \
+            -d "hash=$HASH" \
+            http://localhost:8000/api/v1/scan
+          
+          echo "⏳ Waiting for scan to complete..."
+          sleep 60
+
+      - name: Get MobSF Report
+        run: |
+          HASH="${{ steps.upload.outputs.hash }}"
+          
+          echo "📊 Fetching security report..."
+          curl -s -X POST \
+            -H "Authorization: 1234567890" \
+            -d "hash=$HASH" \
+            http://localhost:8000/api/v1/report_json > mobsf-report.json
+          
+          echo ""
+          echo "📱 MobSF Security Summary:"
+          echo "=========================="
+          
+          SECURITY_SCORE=$(cat mobsf-report.json | jq -r '.security_score // "N/A"')
+          HIGH_ISSUES=$(cat mobsf-report.json | jq '[.code_analysis[]? | select(.severity == "high")] | length')
+          MEDIUM_ISSUES=$(cat mobsf-report.json | jq '[.code_analysis[]? | select(.severity == "medium")] | length')
+          
+          echo "🔐 Security Score: $SECURITY_SCORE/100"
+          echo "🔴 High Issues: $HIGH_ISSUES"
+          echo "🟠 Medium Issues: $MEDIUM_ISSUES"
+          
+          echo "MobSF Security Report" > mobsf-summary.txt
+          echo "=====================" >> mobsf-summary.txt
+          echo "" >> mobsf-summary.txt
+          echo "Security Score: $SECURITY_SCORE/100" >> mobsf-summary.txt
+          echo "High Issues: $HIGH_ISSUES" >> mobsf-summary.txt
+          echo "Medium Issues: $MEDIUM_ISSUES" >> mobsf-summary.txt
+        continue-on-error: true
+
+      - name: Upload MobSF reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobsf-security-report
+          path: |
+            mobsf-report.json
+            mobsf-summary.txt
+          retention-days: 30
+
+      - name: Stop MobSF
+        if: always()
+        run: docker stop mobsf || true
