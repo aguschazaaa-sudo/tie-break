@@ -16,6 +16,7 @@ import 'package:padel_punilla/presentation/screens/my_reservations/my_reservatio
 import 'package:padel_punilla/presentation/screens/profile/profile_screen.dart';
 import 'package:padel_punilla/presentation/screens/season/leaderboard_screen.dart';
 import 'package:padel_punilla/presentation/widgets/ambient_glow.dart';
+import 'package:padel_punilla/presentation/widgets/gradient_logo.dart';
 import 'package:provider/provider.dart';
 
 /// Pantalla principal de la aplicación (Home).
@@ -337,20 +338,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           children: [
             // Logo con gradiente
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [colorScheme.primary, colorScheme.tertiary],
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                Icons.sports_tennis,
-                color: colorScheme.onPrimary,
-                size: 18,
-              ),
-            ),
+            const GradientLogo.medium(),
             const SizedBox(width: 10),
             Text(
               'Padel Punilla',

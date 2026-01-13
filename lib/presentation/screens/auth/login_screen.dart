@@ -6,6 +6,7 @@ import 'package:padel_punilla/presentation/screens/home/home_screen.dart';
 import 'package:padel_punilla/presentation/widgets/ambient_glow.dart';
 import 'package:padel_punilla/presentation/widgets/auth_card.dart';
 import 'package:padel_punilla/presentation/widgets/custom_text_field.dart';
+import 'package:padel_punilla/presentation/widgets/gradient_logo.dart';
 import 'package:padel_punilla/presentation/widgets/primary_button.dart';
 import 'package:padel_punilla/presentation/widgets/secondary_button.dart';
 import 'package:provider/provider.dart';
@@ -113,6 +114,17 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Stack(
         children: [
+          // Background image with overlay
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/pexels-anhelina-vasylyk-734724285-35248373.jpg',
+              fit: BoxFit.cover,
+              color: Theme.of(
+                context,
+              ).scaffoldBackgroundColor.withValues(alpha: 0.85),
+              colorBlendMode: BlendMode.darken,
+            ),
+          ),
           Positioned(
             top: -100,
             right: -100,
@@ -129,11 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.sports_tennis,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                  const GradientLogo.large(),
                   const SizedBox(height: 24),
                   Text(
                     'Bienvenido',

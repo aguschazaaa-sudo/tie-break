@@ -5,6 +5,7 @@ import 'package:padel_punilla/presentation/screens/auth/login_screen.dart';
 import 'package:padel_punilla/presentation/screens/auth/signup_screen.dart';
 import 'package:padel_punilla/presentation/screens/landing/widgets/widgets.dart';
 import 'package:padel_punilla/presentation/widgets/ambient_glow.dart';
+import 'package:padel_punilla/presentation/widgets/gradient_logo.dart';
 import 'package:padel_punilla/presentation/widgets/surface_card.dart';
 
 /// Landing screen principal con diseño premium.
@@ -35,21 +36,8 @@ class LandingScreen extends StatelessWidget {
         ),
         title: Row(
           children: [
-            // Logo con gradiente
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [colorScheme.primary, colorScheme.tertiary],
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                Icons.sports_tennis,
-                color: colorScheme.onPrimary,
-                size: 18,
-              ),
-            ),
+            // Logo con gradiente usando widget reutilizable
+            const GradientLogo.medium(),
             const SizedBox(width: 10),
             Flexible(
               child: Text(
@@ -180,7 +168,7 @@ class LandingScreen extends StatelessWidget {
     );
   }
 
-  /// Visual del hero - mockup de la app
+  /// Visual del hero - imagen real de paddle con cards flotantes
   Widget _buildHeroVisual(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -188,62 +176,46 @@ class LandingScreen extends StatelessWidget {
       height: 400,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            colorScheme.surface.withValues(alpha: 0.5),
-            colorScheme.surface.withValues(alpha: 0.1),
-          ],
-        ),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.primary.withValues(alpha: 0.1),
+            color: colorScheme.primary.withValues(alpha: 0.2),
             blurRadius: 40,
+            offset: const Offset(0, 20),
           ),
         ],
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Mockup visual principal
-          Positioned(
-            top: 40,
-            left: 40,
-            right: 40,
-            bottom: 100,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
+          // Imagen principal de jugadoras de paddle
+          ClipRRect(
+            borderRadius: BorderRadius.circular(32),
+            child: Image.asset(
+              'assets/images/pexels-khezez-34079996.jpg',
+              height: 400,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+          // Overlay gradiente para mejorar contraste
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(32),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.6),
                 ],
               ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.bar_chart_rounded,
-                      size: 80,
-                      color: colorScheme.primary.withValues(alpha: 0.5),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Leaderboard',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onSurface.withValues(alpha: 0.5),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            ),
+          ),
+          // Borde sutil
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
             ),
           ),
 

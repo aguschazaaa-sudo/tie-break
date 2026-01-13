@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:padel_punilla/presentation/screens/policies/privacy_policy_screen.dart';
 import 'package:padel_punilla/presentation/screens/policies/terms_conditions_screen.dart';
+import 'package:padel_punilla/presentation/widgets/gradient_logo.dart';
 
 /// Footer mejorado para la landing page.
 /// Incluye links a políticas, redes sociales y branding.
@@ -64,7 +65,7 @@ class LandingFooter extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.sports_tennis, size: 16, color: colorScheme.primary),
+              const GradientLogo.small(),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -92,20 +93,7 @@ class LandingFooter extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [colorScheme.primary, colorScheme.tertiary],
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.sports_tennis,
-                color: colorScheme.onPrimary,
-                size: 24,
-              ),
-            ),
+            const GradientLogo.medium(),
             const SizedBox(width: 12),
             Flexible(
               child: Text(

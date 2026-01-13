@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:padel_punilla/config/theme/app_theme.dart';
 import 'package:padel_punilla/data/repositories/auth_repository_impl.dart';
 import 'package:padel_punilla/data/repositories/club_repository_impl.dart';
@@ -31,6 +32,14 @@ void main() async {
     persistenceEnabled: true,
     cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
   );
+
+  // Pre-cargar Google Fonts para evitar FOUT (Flash of Unstyled Text)
+  await Future.wait([
+    GoogleFonts.pendingFonts([
+      GoogleFonts.spaceGrotesk(),
+      GoogleFonts.roboto(),
+    ]),
+  ]);
 
   runApp(const MyApp());
 }

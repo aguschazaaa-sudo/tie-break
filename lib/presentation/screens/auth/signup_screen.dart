@@ -118,6 +118,17 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
       body: Stack(
         children: [
+          // Background image with overlay
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/pexels-ivanhdz-32349969.jpg',
+              fit: BoxFit.cover,
+              color: Theme.of(
+                context,
+              ).scaffoldBackgroundColor.withValues(alpha: 0.85),
+              colorBlendMode: BlendMode.darken,
+            ),
+          ),
           Positioned(
             top: -100,
             right: -100,
