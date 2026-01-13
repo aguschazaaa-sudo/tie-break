@@ -1,17 +1,11 @@
-name: Code Quality
+name: Code Quality (Reusable)
 
 on:
-  workflow_run:
-    workflows: ["Build & Test"]
-    types: [completed]
-    branches: [ "main", "master" ]
+  workflow_call:
 
 jobs:
-  code-quality:
-    name: 🔍 Code Quality
+  quality:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-
     steps:
       - uses: actions/checkout@v4
 

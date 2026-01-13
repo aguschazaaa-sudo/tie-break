@@ -1,16 +1,11 @@
-name: Build & Test
+name: Build & Test (Reusable)
 
 on:
-  push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
+  workflow_call:
 
 jobs:
-  build-test:
-    name: 🔨 Build & Test
+  build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 

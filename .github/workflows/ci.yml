@@ -1,0 +1,47 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  # ==========================================
+  # STAGE 1: Build & Test
+  # ==========================================
+  build-test:
+    name: 🔨 Build & Test
+    uses: ./.github/workflows/_build.yml
+
+  # ==========================================
+  # STAGE 2: Quality & Security (parallel)
+  # ==========================================
+  security:
+    name: 🔒 Security
+    needs: build-test
+    uses: ./.github/workflows/_security.yml
+
+  dependencies:
+    name: 📦 Dependencies
+    needs: build-test
+    uses: ./.github/workflows/_dependencies.yml
+
+  code-quality:
+    name: 🔍 Code Quality
+    needs: build-test
+    uses: ./.github/workflows/_code-quality.yml
+
+  # ==========================================
+  # STAGE 3: Mobile Security
+  # ==========================================
+  build-apk:
+    name: 📱 Build APK
+    needs: build-test
+    uses: ./.github/workflows/_build-apk.yml
+    secrets: inherit
+
+  mobsf:
+    name: 🛡️ MobSF
+    needs: build-apk
+    uses: ./.github/workflows/_mobsf.yml
