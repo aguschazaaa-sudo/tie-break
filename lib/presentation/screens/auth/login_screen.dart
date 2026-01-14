@@ -6,7 +6,7 @@ import 'package:padel_punilla/presentation/screens/home/home_screen.dart';
 import 'package:padel_punilla/presentation/widgets/ambient_glow.dart';
 import 'package:padel_punilla/presentation/widgets/auth_card.dart';
 import 'package:padel_punilla/presentation/widgets/custom_text_field.dart';
-import 'package:padel_punilla/presentation/widgets/gradient_logo.dart';
+import 'package:padel_punilla/presentation/widgets/logo.dart';
 import 'package:padel_punilla/presentation/widgets/primary_button.dart';
 import 'package:padel_punilla/presentation/widgets/secondary_button.dart';
 import 'package:provider/provider.dart';

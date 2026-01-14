@@ -5,7 +5,7 @@ import 'package:padel_punilla/presentation/screens/auth/login_screen.dart';
 import 'package:padel_punilla/presentation/screens/auth/signup_screen.dart';
 import 'package:padel_punilla/presentation/screens/landing/widgets/widgets.dart';
 import 'package:padel_punilla/presentation/widgets/ambient_glow.dart';
-import 'package:padel_punilla/presentation/widgets/gradient_logo.dart';
+import 'package:padel_punilla/presentation/widgets/logo.dart';
 import 'package:padel_punilla/presentation/widgets/surface_card.dart';
 
 /// Landing screen principal con diseño premium.

@@ -84,12 +84,9 @@ flutter_launcher_icons:
 flutter_native_splash:
   color: "#0a1628"
   image: "assets/icons/imagotipo.png"
-  branding: "assets/icons/PADEL PUNILLA.png"
-  branding_mode: bottom
   android_12:
     color: "#0a1628"
     image: "assets/icons/imagotipo.png"
-    branding: "assets/icons/PADEL PUNILLA.png"
   web: true
   ios: true
   android: true

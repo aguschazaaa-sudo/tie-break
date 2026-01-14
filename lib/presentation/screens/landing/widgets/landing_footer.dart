@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:padel_punilla/presentation/screens/policies/privacy_policy_screen.dart';
 import 'package:padel_punilla/presentation/screens/policies/terms_conditions_screen.dart';
-import 'package:padel_punilla/presentation/widgets/gradient_logo.dart';
+import 'package:padel_punilla/presentation/widgets/logo.dart';
 
 /// Footer mejorado para la landing page.
 /// Incluye links a políticas, redes sociales y branding.

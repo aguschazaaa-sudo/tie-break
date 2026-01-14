@@ -16,7 +16,7 @@ import 'package:padel_punilla/presentation/screens/my_reservations/my_reservatio
 import 'package:padel_punilla/presentation/screens/profile/profile_screen.dart';
 import 'package:padel_punilla/presentation/screens/season/leaderboard_screen.dart';
 import 'package:padel_punilla/presentation/widgets/ambient_glow.dart';
-import 'package:padel_punilla/presentation/widgets/gradient_logo.dart';
+import 'package:padel_punilla/presentation/widgets/logo.dart';
 import 'package:provider/provider.dart';
 
 /// Pantalla principal de la aplicación (Home).

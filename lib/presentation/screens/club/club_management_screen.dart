@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:padel_punilla/domain/repositories/auth_repository.dart';
 import 'package:padel_punilla/domain/repositories/club_repository.dart';
 import 'package:padel_punilla/domain/repositories/reservation_repository.dart';
-import 'package:padel_punilla/domain/repositories/season_repository.dart';
 import 'package:padel_punilla/domain/repositories/storage_repository.dart';
 import 'package:padel_punilla/presentation/providers/club_management_provider.dart';
 import 'package:padel_punilla/presentation/screens/club/tabs/club_config_tab.dart';
 import 'package:padel_punilla/presentation/screens/club/tabs/club_courts_tab.dart';
 import 'package:padel_punilla/presentation/screens/club/tabs/club_dashboard_tab.dart';
-import 'package:padel_punilla/presentation/screens/club/tabs/club_seasons_tab.dart';
 import 'package:padel_punilla/presentation/screens/club/tabs/club_team_tab.dart';
 import 'package:padel_punilla/presentation/widgets/skeleton_loader.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +22,6 @@ class ClubManagementScreen extends StatelessWidget {
             authRepository: context.read<AuthRepository>(),
             clubRepository: context.read<ClubRepository>(),
             reservationRepository: context.read<ReservationRepository>(),
-            seasonRepository: context.read<SeasonRepository>(),
             storageRepository: context.read<StorageRepository>(),
           ),
       child: const _ClubManagementScreenContent(),
@@ -48,7 +45,7 @@ class _ClubManagementScreenContentState
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -120,7 +117,6 @@ class _ClubManagementScreenContentState
                   Tab(text: 'Resumen', icon: Icon(Icons.dashboard)),
                   Tab(text: 'Configuración', icon: Icon(Icons.settings)),
                   Tab(text: 'Canchas', icon: Icon(Icons.sports_tennis)),
-                  Tab(text: 'Temporadas', icon: Icon(Icons.emoji_events)),
                   Tab(text: 'Equipo', icon: Icon(Icons.people_outline)),
                 ],
               ),
@@ -139,7 +135,6 @@ class _ClubManagementScreenContentState
                     ClubDashboardTab(isDesktop: isDesktop),
                     ClubConfigTab(isDesktop: isDesktop),
                     ClubCourtsTab(isDesktop: isDesktop),
-                    ClubSeasonsTab(isDesktop: isDesktop),
                     ClubTeamTab(isDesktop: isDesktop),
                   ],
                 ),

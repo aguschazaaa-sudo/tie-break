@@ -5,7 +5,6 @@ import 'package:padel_punilla/domain/enums/reservation_enums.dart';
 import 'package:padel_punilla/domain/models/club_dashboard_stats.dart';
 import 'package:padel_punilla/domain/models/club_model.dart';
 import 'package:padel_punilla/domain/models/reservation_model.dart';
-import 'package:padel_punilla/domain/models/season_model.dart';
 import 'package:padel_punilla/domain/repositories/auth_repository.dart';
 import 'package:padel_punilla/domain/repositories/club_repository.dart';
 import 'package:padel_punilla/domain/repositories/reservation_repository.dart';
@@ -21,7 +20,7 @@ class ClubManagementProvider extends ChangeNotifier {
     required AuthRepository authRepository,
     required ClubRepository clubRepository,
     required ReservationRepository reservationRepository,
-    required SeasonRepository seasonRepository,
+    SeasonRepository? seasonRepository,
     required StorageRepository storageRepository,
   }) : _authRepository = authRepository,
        _clubRepository = clubRepository,
@@ -33,7 +32,7 @@ class ClubManagementProvider extends ChangeNotifier {
   final AuthRepository _authRepository;
   final ClubRepository _clubRepository;
   final ReservationRepository _reservationRepository;
-  final SeasonRepository _seasonRepository;
+  final SeasonRepository? _seasonRepository;
   final StorageRepository _storageRepository;
   // ... (existing code)
 
@@ -48,8 +47,8 @@ class ClubManagementProvider extends ChangeNotifier {
 
     // 2. Actualizar puntuaciones si hay temporada activa
     try {
-      if (_club == null) return;
-      final activeSeason = await _seasonRepository.getActiveSeasonByClub(
+      if (_club == null || _seasonRepository == null) return;
+      final activeSeason = await _seasonRepository!.getActiveSeasonByClub(
         _club!.id,
       );
       if (activeSeason != null) {
@@ -74,13 +73,14 @@ class ClubManagementProvider extends ChangeNotifier {
     List<String> userIds,
     double pointsToAdd,
   ) async {
+    if (_seasonRepository == null) return;
     for (final userId in userIds) {
-      final currentScoreData = await _seasonRepository.getUserScore(
+      final currentScoreData = await _seasonRepository!.getUserScore(
         seasonId,
         userId,
       );
       final currentScore = currentScoreData?.score ?? 0.0;
-      await _seasonRepository.updateUserScore(
+      await _seasonRepository!.updateUserScore(
         seasonId,
         userId,
         currentScore + pointsToAdd,
@@ -92,7 +92,6 @@ class ClubManagementProvider extends ChangeNotifier {
   bool _isLoading = true;
   DateTime _selectedDate = DateTime.now();
   List<ReservationModel> _reservations = [];
-  List<SeasonModel> _seasons = [];
   ClubDashboardStats _dashboardStats = const ClubDashboardStats();
 
   /// Mapa de userId -> displayName para mostrar en el timeline
@@ -102,7 +101,6 @@ class ClubManagementProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   DateTime get selectedDate => _selectedDate;
   List<ReservationModel> get reservations => _reservations;
-  List<SeasonModel> get seasons => _seasons;
   ClubDashboardStats get dashboardStats => _dashboardStats;
   Map<String, String> get userNames => _userNames;
 
@@ -129,7 +127,7 @@ class ClubManagementProvider extends ChangeNotifier {
         final club = await _clubRepository.getClubByUserId(currentUser.uid);
         if (club != null) {
           _club = club;
-          await Future.wait([_loadReservations(), _loadSeasons()]);
+          await _loadReservations();
         }
       }
     } catch (e) {
@@ -385,67 +383,6 @@ class ClubManagementProvider extends ChangeNotifier {
     await _clubRepository.updateClub(updatedClub);
     _club = updatedClub;
     notifyListeners();
-  }
-
-  // ============================================================
-  // Métodos de gestión de Temporadas (Ligas)
-  // ============================================================
-
-  Future<void> _loadSeasons() async {
-    if (_club == null) return;
-    try {
-      _seasons = await _seasonRepository.getSeasonsByClub(_club!.id);
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error loading seasons: $e');
-    }
-  }
-
-  Future<void> createSeason({
-    required String name,
-    required DateTime startDate,
-    required DateTime endDate,
-  }) async {
-    if (_club == null) return;
-
-    final newSeason = SeasonModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name,
-      clubId: _club!.id,
-      number: (_seasons.length) + 1,
-      startDate: startDate,
-      endDate: endDate,
-      isActive: true, // Por defecto activa
-    );
-
-    // Desactivar otras temporadas activas si se crea una nueva activa?
-    // Por simplicidad, dejamos que el backend o lógica de negocio maneje esto,
-    // o simplemente desactivamos las demás aquí.
-    for (final s in _seasons) {
-      if (s.isActive) {
-        await _seasonRepository.createSeason(s.copyWith(isActive: false));
-      }
-    }
-
-    await _seasonRepository.createSeason(newSeason);
-    await _loadSeasons();
-  }
-
-  Future<void> toggleSeasonStatus(String seasonId) async {
-    final season = _seasons.firstWhere((s) => s.id == seasonId);
-    final newStatus = !season.isActive;
-
-    // Si activamos esta, desactivamos las demas
-    if (newStatus) {
-      for (final s in _seasons) {
-        if (s.id != seasonId && s.isActive) {
-          await _seasonRepository.createSeason(s.copyWith(isActive: false));
-        }
-      }
-    }
-
-    await _seasonRepository.createSeason(season.copyWith(isActive: newStatus));
-    await _loadSeasons();
   }
 
   // ============================================================
