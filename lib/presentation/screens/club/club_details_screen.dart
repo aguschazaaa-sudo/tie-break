@@ -287,14 +287,19 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                                   60 *
                                   (_endHour - _startHour + 1),
                               startHour: _startHour,
+                              endHour: _endHour,
                               height: _rowHeight,
                               slotDurationMinutes: court.slotDurationMinutes,
                               config: TimelineConfig.userView,
+                              clubSchedules: widget.club.availableSchedules,
                               onReservationTap: (res) {
                                 // If reservation is incomplete, show join option
                                 if (!res.isComplete) {
                                   _showJoinDialog(res, court);
                                 }
+                              },
+                              onAvailableSlotTap: (slotTime) {
+                                _showReservationModal(court, slotTime);
                               },
                             );
                           }),
@@ -314,6 +319,135 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showReservationModal(CourtModel court, DateTime slotTime) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final hour = slotTime.hour.toString().padLeft(2, '0');
+    final minute = slotTime.minute.toString().padLeft(2, '0');
+    final timeStr = '$hour:$minute';
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (context) => Padding(
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 24,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colorScheme.outlineVariant,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Nueva Reserva',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildInfoRow(
+                  context,
+                  Icons.sports_tennis,
+                  'Cancha',
+                  court.name,
+                ),
+                const SizedBox(height: 12),
+                _buildInfoRow(
+                  context,
+                  Icons.calendar_today,
+                  'Fecha',
+                  '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                ),
+                const SizedBox(height: 12),
+                _buildInfoRow(context, Icons.access_time, 'Hora', timeStr),
+                const SizedBox(height: 12),
+                _buildInfoRow(
+                  context,
+                  Icons.attach_money,
+                  'Precio',
+                  '\$${court.reservationPrice.toStringAsFixed(0)}',
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: colorScheme.onSurface,
+                          side: BorderSide(color: colorScheme.outline),
+                        ),
+                        child: const Text('Cancelar'),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _navigateToReservation(court);
+                        },
+                        style: FilledButton.styleFrom(
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
+                        ),
+                        child: const Text('Reservar'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  Widget _buildInfoRow(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: colorScheme.primary),
+        const SizedBox(width: 12),
+        Text(
+          '$label:',
+          style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 14),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          value,
+          style: TextStyle(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+      ],
     );
   }
 
