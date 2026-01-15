@@ -4,7 +4,7 @@ import 'package:padel_punilla/domain/models/court_model.dart';
 import 'package:padel_punilla/domain/models/reservation_model.dart';
 import 'package:padel_punilla/domain/repositories/court_repository.dart';
 import 'package:padel_punilla/domain/repositories/reservation_repository.dart';
-import 'package:padel_punilla/presentation/screens/reservation/reservation_screen.dart';
+import 'package:padel_punilla/presentation/widgets/reservation_modal.dart';
 import 'package:padel_punilla/presentation/widgets/timeline/court_timeline_row.dart';
 import 'package:padel_punilla/presentation/widgets/timeline/timeline_config.dart';
 import 'package:padel_punilla/presentation/widgets/timeline/timeline_court_header.dart';
@@ -123,8 +123,10 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
   }
 
   Widget _buildClubHeader(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(12),
+      color: colorScheme.surface,
       child: Row(
         children: [
           if (widget.club.logoUrl != null)
@@ -135,7 +137,9 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                 width: 50,
                 height: 50,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(Icons.sports_tennis),
+                errorBuilder:
+                    (_, __, ___) =>
+                        Icon(Icons.sports_tennis, color: colorScheme.primary),
               ),
             ),
           const SizedBox(width: 12),
@@ -147,16 +151,23 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                   widget.club.name,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 Row(
                   children: [
-                    const Icon(Icons.location_on, size: 14),
+                    Icon(
+                      Icons.location_on,
+                      size: 14,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         '${widget.club.address}, ${widget.club.locality.displayName}',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -247,7 +258,17 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                     (court) => SizedBox(
                       height: _rowHeight,
                       child: GestureDetector(
-                        onTap: () => _navigateToReservation(court),
+                        onTap: () {
+                          // Get first available slot for this court
+                          final now = DateTime.now();
+                          final slotTime = DateTime(
+                            _selectedDate.year,
+                            _selectedDate.month,
+                            _selectedDate.day,
+                            now.hour < _startHour ? _startHour : now.hour + 1,
+                          );
+                          _showReservationModal(court, slotTime);
+                        },
                         child: TimelineCourtHeader(
                           court: court,
                           width: headerWidth,
@@ -323,161 +344,50 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
   }
 
   void _showReservationModal(CourtModel court, DateTime slotTime) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final hour = slotTime.hour.toString().padLeft(2, '0');
-    final minute = slotTime.minute.toString().padLeft(2, '0');
-    final timeStr = '$hour:$minute';
-
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder:
-          (context) => Padding(
-            padding: EdgeInsets.only(
-              left: 24,
-              right: 24,
-              top: 24,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: colorScheme.outlineVariant,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Nueva Reserva',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildInfoRow(
-                  context,
-                  Icons.sports_tennis,
-                  'Cancha',
-                  court.name,
-                ),
-                const SizedBox(height: 12),
-                _buildInfoRow(
-                  context,
-                  Icons.calendar_today,
-                  'Fecha',
-                  '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                ),
-                const SizedBox(height: 12),
-                _buildInfoRow(context, Icons.access_time, 'Hora', timeStr),
-                const SizedBox(height: 12),
-                _buildInfoRow(
-                  context,
-                  Icons.attach_money,
-                  'Precio',
-                  '\$${court.reservationPrice.toStringAsFixed(0)}',
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: colorScheme.onSurface,
-                          side: BorderSide(color: colorScheme.outline),
-                        ),
-                        child: const Text('Cancelar'),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: FilledButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _navigateToReservation(court);
-                        },
-                        style: FilledButton.styleFrom(
-                          backgroundColor: colorScheme.primary,
-                          foregroundColor: colorScheme.onPrimary,
-                        ),
-                        child: const Text('Reservar'),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-    );
-  }
-
-  Widget _buildInfoRow(
-    BuildContext context,
-    IconData icon,
-    String label,
-    String value,
-  ) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: colorScheme.primary),
-        const SizedBox(width: 12),
-        Text(
-          '$label:',
-          style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 14),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          value,
-          style: TextStyle(
-            color: colorScheme.onSurface,
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _navigateToReservation(CourtModel court) {
-    Navigator.push(
+    ReservationModal.show(
       context,
-      MaterialPageRoute<void>(
-        builder: (context) => ReservationScreen(court: court),
-      ),
+      court: court,
+      slotTime: slotTime,
+      selectedDate: _selectedDate,
+      onReservationCreated: _loadReservations,
     );
   }
 
   void _showJoinDialog(ReservationModel reservation, CourtModel court) {
+    final colorScheme = Theme.of(context).colorScheme;
     showDialog<void>(
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Unirse al Partido'),
+            backgroundColor: colorScheme.surface,
+            title: Text(
+              'Unirse al Partido',
+              style: TextStyle(color: colorScheme.onSurface),
+            ),
             content: Text(
               'Hay un ${reservation.type.displayName} disponible en ${court.name}. ¿Deseas unirte?',
+              style: TextStyle(color: colorScheme.onSurfaceVariant),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Cancelar'),
+                child: Text(
+                  'Cancelar',
+                  style: TextStyle(color: colorScheme.onSurfaceVariant),
+                ),
               ),
               FilledButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  _navigateToReservation(court);
+                  // TODO: Implementar unirse a reserva existente
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text(
+                        'Funcionalidad de unirse próximamente',
+                      ),
+                      backgroundColor: colorScheme.secondary,
+                    ),
+                  );
                 },
                 child: const Text('Unirse'),
               ),

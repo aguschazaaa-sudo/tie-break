@@ -125,9 +125,7 @@ void main() {
       expect(find.text('Cancha 2'), findsOneWidget);
     });
 
-    testWidgets('tapping court header navigates to reservation screen', (
-      tester,
-    ) async {
+    testWidgets('tapping court header opens reservation modal', (tester) async {
       // Arrange
       final courts = <CourtModel>[
         createTestCourt(id: 'court1', name: 'Cancha 1'),
@@ -144,12 +142,12 @@ void main() {
       await tester.pumpWidget(createWidgetUnderTest(testClub));
       await tester.pumpAndSettle();
 
-      // Tap on court header to navigate
+      // Tap on court header to open modal
       await tester.tap(find.text('Cancha 1'));
       await tester.pumpAndSettle();
 
-      // Assert - should navigate to ReservationScreen
-      expect(find.text('Reservar Cancha 1'), findsOneWidget);
+      // Assert - should open reservation modal
+      expect(find.text('Nueva Reserva'), findsOneWidget);
     });
 
     testWidgets('date navigation changes displayed date', (tester) async {
