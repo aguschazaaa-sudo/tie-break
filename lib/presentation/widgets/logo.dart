@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// Widget reutilizable que muestra el logo de Padel Punilla
 /// con fondo sólido (mismo color que el splash screen #0a1628).
@@ -56,12 +57,11 @@ class Logo extends StatelessWidget {
           ),
         ],
       ),
-      child: Image.asset(
-        'assets/icons/imagotipo.png',
+      child: SvgPicture.asset(
+        'assets/icons/imagotipo.svg',
         height: size,
         width: size,
         fit: BoxFit.contain,
-        filterQuality: FilterQuality.high,
       ),
     );
   }

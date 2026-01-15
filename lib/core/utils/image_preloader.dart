@@ -8,7 +8,6 @@ class ImagePreloader {
     'assets/images/pexels-khezez-34079996.jpg', // Landing
     'assets/images/pexels-anhelina-vasylyk-734724285-35248373.jpg', // Login
     'assets/images/pexels-ivanhdz-32349969.jpg', // Signup
-    'assets/icons/imagotipo.png', // Logo
   ];
 
   /// Preloads all critical images into the image cache.
