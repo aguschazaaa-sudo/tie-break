@@ -5,7 +5,7 @@
 [![Dart](https://img.shields.io/badge/Dart-3.0-%230175C2?logo=dart)](https://dart.dev)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean-green)](https://github.com/resocoder/flutter-clean-architecture-proposal)
 [![Style](https://img.shields.io/badge/Style-Very_Good_Analysis-B22C11)](https://pub.dev/packages/very_good_analysis)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 
 > **La plataforma definitiva para gestión de clubes y ligas de pádel amateur.**
 
@@ -153,7 +153,9 @@ graph TD
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT - siéntete libre de usarlo como base para tus propios proyectos.
+Este proyecto es **software propietario**. Todos los derechos reservados © 2026 Agustín Chazarreta.
+
+No está permitido copiar, modificar, distribuir o usar este software sin autorización previa por escrito.
 
 ---
 
