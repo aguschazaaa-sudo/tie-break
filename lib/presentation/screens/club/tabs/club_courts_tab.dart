@@ -347,6 +347,18 @@ class _ClubCourtsTabState extends State<ClubCourtsTab> {
                       child: TimelineCourtHeader(
                         court: court,
                         width: headerWidth,
+                        onEdit: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => CourtFormScreen(
+                                    clubId: court.clubId,
+                                    court: court,
+                                  ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),

@@ -5,10 +5,12 @@ class TimelineCourtHeader extends StatelessWidget {
   const TimelineCourtHeader({
     required this.court,
     required this.width,
+    this.onEdit,
     super.key,
   });
   final CourtModel court;
   final double width;
+  final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +32,33 @@ class TimelineCourtHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            court.name,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  court.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+              if (onEdit != null)
+                InkWell(
+                  onTap: onEdit,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(2),
+                    child: Icon(
+                      Icons.settings,
+                      size: 14,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 4),
           Text(
