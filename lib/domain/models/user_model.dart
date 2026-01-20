@@ -17,6 +17,7 @@ class UserModel {
     this.followers = const [],
     this.following = const [],
     this.favoriteClubIds = const [],
+    this.fcmToken,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -47,6 +48,7 @@ class UserModel {
       favoriteClubIds: List<String>.from(
         (map['favoriteClubIds'] as List<dynamic>?) ?? [],
       ),
+      fcmToken: map['fcmToken'] as String?,
     );
   }
   final String id;
@@ -66,6 +68,9 @@ class UserModel {
   /// Lista de IDs de clubes favoritos del usuario (máximo 10)
   final List<String> favoriteClubIds;
 
+  /// Token de Firebase Cloud Messaging para notificaciones push
+  final String? fcmToken;
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -81,6 +86,7 @@ class UserModel {
       'followers': followers,
       'following': following,
       'favoriteClubIds': favoriteClubIds,
+      'fcmToken': fcmToken,
     };
   }
 
@@ -101,6 +107,7 @@ class UserModel {
     List<String>? followers,
     List<String>? following,
     List<String>? favoriteClubIds,
+    Object? fcmToken = _sentinel,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -117,6 +124,7 @@ class UserModel {
       followers: followers ?? this.followers,
       following: following ?? this.following,
       favoriteClubIds: favoriteClubIds ?? this.favoriteClubIds,
+      fcmToken: fcmToken == _sentinel ? this.fcmToken : fcmToken as String?,
     );
   }
 
@@ -140,7 +148,8 @@ class UserModel {
         other.following.length == following.length &&
         other.following.every(following.contains) &&
         other.favoriteClubIds.length == favoriteClubIds.length &&
-        other.favoriteClubIds.every(favoriteClubIds.contains);
+        other.favoriteClubIds.every(favoriteClubIds.contains) &&
+        other.fcmToken == fcmToken;
   }
 
   @override
@@ -157,11 +166,12 @@ class UserModel {
         locality.hashCode ^
         Object.hashAll(followers) ^
         Object.hashAll(following) ^
-        Object.hashAll(favoriteClubIds);
+        Object.hashAll(favoriteClubIds) ^
+        fcmToken.hashCode;
   }
 
   @override
   String toString() {
-    return 'UserModel(id: $id, email: $email, username: $username, displayName: $displayName, discriminator: $discriminator, photoUrl: $photoUrl, createdAt: $createdAt, category: $category, gender: $gender, locality: $locality, followers: $followers, following: $following, favoriteClubIds: $favoriteClubIds)';
+    return 'UserModel(id: $id, email: $email, username: $username, displayName: $displayName, discriminator: $discriminator, photoUrl: $photoUrl, createdAt: $createdAt, category: $category, gender: $gender, locality: $locality, followers: $followers, following: $following, favoriteClubIds: $favoriteClubIds, fcmToken: $fcmToken)';
   }
 }

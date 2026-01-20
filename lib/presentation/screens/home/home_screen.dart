@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:padel_punilla/domain/enums/locality.dart';
 import 'package:padel_punilla/domain/models/club_model.dart';
@@ -9,6 +10,7 @@ import 'package:padel_punilla/domain/repositories/auth_repository.dart';
 import 'package:padel_punilla/domain/repositories/club_repository.dart';
 import 'package:padel_punilla/domain/repositories/reservation_repository.dart';
 import 'package:padel_punilla/presentation/screens/club/club_details_screen.dart';
+import 'package:padel_punilla/presentation/widgets/join_match/join_match_sheet.dart';
 import 'package:padel_punilla/presentation/screens/home/widgets/active_search_section.dart';
 import 'package:padel_punilla/presentation/screens/home/widgets/club_search_section.dart';
 import 'package:padel_punilla/presentation/screens/home/widgets/favorite_clubs_section.dart';
@@ -81,9 +83,30 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           _currentUser = userData;
         });
+        _setupFcm();
       }
     } catch (e) {
       // Error cargando usuario - continuamos sin datos
+    }
+  }
+
+  /// Configura FCM y actualiza el token en Firestore si es necesario
+  Future<void> _setupFcm() async {
+    if (_currentUser == null) return;
+
+    try {
+      final messaging = FirebaseMessaging.instance;
+      final token = await messaging.getToken();
+
+      if (token != null && token != _currentUser!.fcmToken) {
+        await context.read<AuthRepository>().updateFcmToken(
+          _currentUser!.id,
+          token,
+        );
+        debugPrint('[HomeScreen] FCM Token updated successfully');
+      }
+    } catch (e) {
+      debugPrint('[HomeScreen] Error setting up FCM: $e');
     }
   }
 
@@ -292,12 +315,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Navega al detalle de una reserva (por ahora al club)
+  /// Muestra opciones para unirse a una reserva incompleta
   void _navigateToReservation(ReservationModel reservation) {
-    final club = _clubsMap[reservation.clubId];
-    if (club != null) {
-      _navigateToClub(club);
-    }
+    JoinMatchSheet.show(
+      context,
+      reservation: reservation,
+      onJoined: _loadActiveSearches,
+    );
   }
 
   /// Cierra sesión

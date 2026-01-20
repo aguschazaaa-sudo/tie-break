@@ -219,9 +219,18 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
         filled: true,
         fillColor: Theme.of(context).colorScheme.surface,
       ),
+      dropdownColor: Theme.of(context).colorScheme.surface,
       items:
           CourtSurface.values.map((s) {
-            return DropdownMenuItem(value: s, child: Text(s.displayName));
+            return DropdownMenuItem(
+              value: s,
+              child: Text(
+                s.displayName,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            );
           }).toList(),
       onChanged: (v) => setState(() => _selectedSurface = v!),
     );

@@ -216,6 +216,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                                 DropdownButtonFormField<PaddleCategory>(
                                   value: _selectedCategory,
+                                  dropdownColor:
+                                      Theme.of(context).colorScheme.surface,
                                   decoration: const InputDecoration(
                                     labelText: 'Categoría',
                                     border: OutlineInputBorder(),
@@ -225,7 +227,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       PaddleCategory.values.map((category) {
                                         return DropdownMenuItem(
                                           value: category,
-                                          child: Text(category.label),
+                                          child: Text(
+                                            category.label,
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.onSurface,
+                                            ),
+                                          ),
                                         );
                                       }).toList(),
                                   onChanged: (value) {
@@ -237,6 +247,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 const SizedBox(height: 16),
                                 DropdownButtonFormField<PlayerGender>(
                                   value: _selectedGender,
+                                  dropdownColor:
+                                      Theme.of(context).colorScheme.surface,
                                   decoration: const InputDecoration(
                                     labelText: 'Género',
                                     border: OutlineInputBorder(),
@@ -246,7 +258,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       PlayerGender.values.map((gender) {
                                         return DropdownMenuItem(
                                           value: gender,
-                                          child: Text(gender.label),
+                                          child: Text(
+                                            gender.label,
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.onSurface,
+                                            ),
+                                          ),
                                         );
                                       }).toList(),
                                   onChanged: (value) {

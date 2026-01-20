@@ -8,13 +8,13 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Helper function to check if user is the admin of the club
+    // Helper function to check if user is the admin of the club (using get for external documents)
     function isClubAdmin(clubId) {
       return isAuthenticated() && 
         get(/databases/$(database)/documents/clubs/$(clubId)).data.adminId == request.auth.uid;
     }
 
-    // Helper function to check if user is a helper of the club
+    // Helper function to check if user is a helper of the club (using get for external documents)
     function isClubHelper(clubId) {
       return isAuthenticated() && 
         request.auth.uid in get(/databases/$(database)/documents/clubs/$(clubId)).data.helperIds;
@@ -33,11 +33,14 @@ service cloud.firestore {
       // Only authenticated users can create a club
       allow create: if isAuthenticated();
       
-      // Only the admin can update their club
-      allow update: if isClubAdmin(clubId);
+      // Allow update if the user is admin or helper of THIS club
+      allow update: if isAuthenticated() && (
+        resource.data.adminId == request.auth.uid ||
+        request.auth.uid in resource.data.helperIds
+      );
       
-      // Only the admin can delete (or maybe system admin)
-      allow delete: if isClubAdmin(clubId);
+      // Only the admin can delete
+      allow delete: if isAuthenticated() && resource.data.adminId == request.auth.uid;
 
       // Rules for Courts subcollection
       match /courts/{courtId} {
@@ -54,42 +57,41 @@ service cloud.firestore {
       // Users can read other users (for search/profile)
       allow read: if isAuthenticated();
       
-      // Users can only write their own data
+      // Users can write their own document fully
       allow write: if request.auth.uid == userId;
+      
+      // Allow other users to update only followers array (for follow/unfollow)
+      allow update: if isAuthenticated() && 
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers']);
     }
 
     // Rules for Reservations collection
     match /reservations/{reservationId} {
-      // Helper to check if user is a participant
-      function isParticipant() {
-        return isAuthenticated() && (
-          request.auth.uid == resource.data.userId || 
-          request.auth.uid in resource.data.participantIds
-        );
-      }
-
+      
       // Helper to check if user manages the club of this reservation
       function managesClub() {
-        let clubId = resource.data.clubId;
-        return hasManagementRights(clubId);
+        return hasManagementRights(resource.data.clubId);
       }
 
-      // Allow read if participant or club manager
-      allow read: if isAuthenticated(); // Broad read for availability check, or refine?
-      // For availability check (query by courtId + date), we need to allow reading reservations of a court.
-      // So, allow read if isAuthenticated() is probably needed for the "checkAvailability" query which filters by courtId.
-      // Ideally we would restrict this, but for now:
+      // Allow read if authenticated (needed for availability checks)
+      allow read: if isAuthenticated();
       
-      // Create: Authenticated users can create
+      // Create: Authenticated users can create their own reservations
       allow create: if isAuthenticated() && 
         request.resource.data.userId == request.auth.uid;
 
-      // Update: Club managers can update (approve/reject), Owner can cancel
+      // Update rules:
+      // 1. Club managers can update anything (approve/reject/etc)
+      // 2. Owner can cancel their reservation
+      // 3. Authenticated users can join matches (update team2Ids and status)
       allow update: if isAuthenticated() && (
         managesClub() || 
+        // Owner can cancel
         (request.auth.uid == resource.data.userId && 
          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'cancellationReason']) &&
-         request.resource.data.status == 'cancelled')
+         request.resource.data.status == 'cancelled') ||
+        // Anyone can join a match (update team2Ids, optionally status)
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['team2Ids', 'status'])
       );
     }
   }

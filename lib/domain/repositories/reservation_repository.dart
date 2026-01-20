@@ -17,4 +17,14 @@ abstract class ReservationRepository {
   Future<List<ReservationModel>> getActiveSearchReservations(
     List<String> clubIds,
   );
+
+  /// Une un usuario (y compañero si es 2vs2) a una reserva incompleta.
+  ///
+  /// Para reservas de tipo 2vs2, [partnerId] es obligatorio.
+  /// Para reservas de tipo Falta1, [partnerId] debe ser null.
+  Future<void> joinMatch({
+    required String reservationId,
+    required String userId,
+    String? partnerId,
+  });
 }

@@ -172,4 +172,27 @@ class SeasonRepositoryImpl implements SeasonRepository {
           // For now, simple set for simulation
         }, SetOptions(merge: true));
   }
+
+  @override
+  Future<void> updateUserScoreWithStats(
+    String seasonId,
+    String userId,
+    double pointsToAdd,
+    bool isWinner,
+  ) async {
+    // Usamos FieldValue.increment para operaciones atómicas
+    // Esto evita race conditions cuando múltiples partidos terminan simultáneamente
+    await _firestore
+        .collection('seasons')
+        .doc(seasonId)
+        .collection('scores')
+        .doc(userId)
+        .set({
+          'userId': userId,
+          'score': FieldValue.increment(pointsToAdd),
+          'matchesPlayed': FieldValue.increment(1),
+          'matchesWon': FieldValue.increment(isWinner ? 1 : 0),
+          'lastUpdated': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+  }
 }

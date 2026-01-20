@@ -14,4 +14,17 @@ abstract class SeasonRepository {
   Future<SeasonScoreModel?> getUserScore(String seasonId, String userId);
   Future<int> getUserRank(String seasonId, double score);
   Future<void> updateUserScore(String seasonId, String userId, double newScore);
+
+  /// Actualiza el puntaje de un usuario con estadísticas de partidos.
+  ///
+  /// Usa operaciones atómicas para incrementar:
+  /// - [pointsToAdd]: puntos a sumar al score actual
+  /// - [matchesPlayed]: incrementa en 1
+  /// - [matchesWon]: incrementa en 1 solo si [isWinner] es true
+  Future<void> updateUserScoreWithStats(
+    String seasonId,
+    String userId,
+    double pointsToAdd,
+    bool isWinner,
+  );
 }

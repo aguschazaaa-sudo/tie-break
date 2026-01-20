@@ -17,6 +17,7 @@ class ReservationCard extends StatelessWidget {
     super.key,
     this.clubName,
     this.courtName,
+    this.currentUserId,
     this.onTap,
   });
 
@@ -28,6 +29,9 @@ class ReservationCard extends StatelessWidget {
 
   /// Nombre de la cancha (opcional)
   final String? courtName;
+
+  /// ID del usuario actual (para mostrar resultado de partido 2vs2)
+  final String? currentUserId;
 
   /// Callback al hacer tap en la card
   final VoidCallback? onTap;
@@ -173,6 +177,12 @@ class ReservationCard extends StatelessWidget {
                 const SizedBox(height: 12),
                 _buildPaymentIndicator(context),
               ],
+
+              // Indicador de resultado de partido 2vs2
+              if (_shouldShowMatchResult()) ...[
+                const SizedBox(height: 12),
+                _buildMatchResultIndicator(context),
+              ],
             ],
           ),
         ),
@@ -301,6 +311,57 @@ class ReservationCard extends StatelessWidget {
         ],
       ],
     );
+  }
+
+  /// Determina si se debe mostrar el indicador de resultado del partido.
+  ///
+  /// Solo se muestra para reservas 2vs2 que tienen un ganador definido
+  /// y cuando se proporciona el ID del usuario actual.
+  bool _shouldShowMatchResult() {
+    return reservation.type == ReservationType.match2vs2 &&
+        reservation.winnerTeam != null &&
+        currentUserId != null;
+  }
+
+  /// Construye el indicador de resultado del partido (Victoria/Derrota).
+  ///
+  /// Usa colores distintivos:
+  /// - Victoria: Verde/secondary con ícono de trofeo
+  /// - Derrota: Color tenue/outline
+  Widget _buildMatchResultIndicator(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    // Determinar si el usuario actual ganó
+    final isInWinningTeam = _isUserInTeam(
+      currentUserId!,
+      reservation.winnerTeam == 1 ? reservation.team1Ids : reservation.team2Ids,
+    );
+
+    final isVictory = isInWinningTeam;
+
+    return Row(
+      children: [
+        Icon(
+          isVictory ? Icons.emoji_events_rounded : Icons.sports_rounded,
+          size: 16,
+          color: isVictory ? colorScheme.secondary : colorScheme.outline,
+        ),
+        const SizedBox(width: 6),
+        Text(
+          isVictory ? '🏆 Victoria' : 'Derrota',
+          style: TextStyle(
+            color: isVictory ? colorScheme.secondary : colorScheme.outline,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Verifica si un usuario está en un equipo dado.
+  bool _isUserInTeam(String userId, List<String> teamIds) {
+    return teamIds.contains(userId);
   }
 
   // Helpers para nombres de días y meses

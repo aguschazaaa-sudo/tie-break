@@ -13,7 +13,7 @@
 migrate_working_dir/
 
 # Agent configuration (local dev tooling)
-.agent/
+
 
 # IntelliJ related
 *.iml

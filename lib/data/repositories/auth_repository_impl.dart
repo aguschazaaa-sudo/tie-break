@@ -431,5 +431,14 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (e) {
       throw Exception('Error al quitar club de favoritos: $e');
     }
+  @override
+  Future<void> updateFcmToken(String userId, String? token) async {
+    try {
+      await _firestore.collection('users').doc(userId).update({
+        'fcmToken': token,
+      });
+    } catch (e) {
+      throw Exception('Error al actualizar token de notificación: $e');
+    }
   }
 }

@@ -141,6 +141,22 @@ void main() {
           () => reservationRepo.updateReservation(any()),
         ).thenAnswer((_) async {});
 
+        // Mock player categories for all players
+        // All players have null category (defaults to seventh = 7)
+        // So both teams have equal level 7.0, base points apply: winner 25, loser 10
+        when(() => authRepo.getUsersByIds(any())).thenAnswer((
+          invocation,
+        ) async {
+          final ids = invocation.positionalArguments[0] as List<String>;
+          return ids.map((id) {
+            final user = MockUserModel();
+            when(() => user.id).thenReturn(id);
+            when(() => user.displayName).thenReturn('User $id');
+            when(() => user.category).thenReturn(null); // Default to seventh
+            return user;
+          }).toList();
+        });
+
         // Reload to populate provider
         provider.setSelectedDate(DateTime.now());
         await Future<void>.delayed(const Duration(milliseconds: 1000));
@@ -159,12 +175,9 @@ void main() {
           () => seasonRepo.getActiveSeasonByClub(any()),
         ).thenAnswer((_) async => season);
 
-        // Stub scores
+        // Stub the new updateUserScoreWithStats method
         when(
-          () => seasonRepo.getUserScore(any(), any()),
-        ).thenAnswer((_) async => null);
-        when(
-          () => seasonRepo.updateUserScore(any(), any(), any()),
+          () => seasonRepo.updateUserScoreWithStats(any(), any(), any(), any()),
         ).thenAnswer((_) async {});
 
         // 3. Action
@@ -180,13 +193,25 @@ void main() {
         expect(captured.id, 'res1');
         expect(captured.winnerTeam, 1);
 
-        // Winners +3
-        verify(() => seasonRepo.updateUserScore('season1', 'p1', 3)).called(1);
-        verify(() => seasonRepo.updateUserScore('season1', 'p2', 3)).called(1);
+        // Winners get base 25 points (isWinner: true)
+        verify(
+          () =>
+              seasonRepo.updateUserScoreWithStats('season1', 'p1', 25.0, true),
+        ).called(1);
+        verify(
+          () =>
+              seasonRepo.updateUserScoreWithStats('season1', 'p2', 25.0, true),
+        ).called(1);
 
-        // Losers +1
-        verify(() => seasonRepo.updateUserScore('season1', 'p3', 1)).called(1);
-        verify(() => seasonRepo.updateUserScore('season1', 'p4', 1)).called(1);
+        // Losers get base 10 points (isWinner: false)
+        verify(
+          () =>
+              seasonRepo.updateUserScoreWithStats('season1', 'p3', 10.0, false),
+        ).called(1);
+        verify(
+          () =>
+              seasonRepo.updateUserScoreWithStats('season1', 'p4', 10.0, false),
+        ).called(1);
       },
     );
 

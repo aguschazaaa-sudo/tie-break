@@ -4,6 +4,7 @@ import 'package:padel_punilla/domain/models/court_model.dart';
 import 'package:padel_punilla/domain/models/reservation_model.dart';
 import 'package:padel_punilla/domain/repositories/court_repository.dart';
 import 'package:padel_punilla/domain/repositories/reservation_repository.dart';
+import 'package:padel_punilla/presentation/widgets/join_match/join_match_sheet.dart';
 import 'package:padel_punilla/presentation/widgets/reservation_modal.dart';
 import 'package:padel_punilla/presentation/widgets/timeline/court_timeline_row.dart';
 import 'package:padel_punilla/presentation/widgets/timeline/timeline_config.dart';
@@ -353,46 +354,13 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
     );
   }
 
+  /// Muestra el bottom sheet para unirse al partido
   void _showJoinDialog(ReservationModel reservation, CourtModel court) {
-    final colorScheme = Theme.of(context).colorScheme;
-    showDialog<void>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            backgroundColor: colorScheme.surface,
-            title: Text(
-              'Unirse al Partido',
-              style: TextStyle(color: colorScheme.onSurface),
-            ),
-            content: Text(
-              'Hay un ${reservation.type.displayName} disponible en ${court.name}. ¿Deseas unirte?',
-              style: TextStyle(color: colorScheme.onSurfaceVariant),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'Cancelar',
-                  style: TextStyle(color: colorScheme.onSurfaceVariant),
-                ),
-              ),
-              FilledButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  // TODO: Implementar unirse a reserva existente
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text(
-                        'Funcionalidad de unirse próximamente',
-                      ),
-                      backgroundColor: colorScheme.secondary,
-                    ),
-                  );
-                },
-                child: const Text('Unirse'),
-              ),
-            ],
-          ),
+    JoinMatchSheet.show(
+      context,
+      reservation: reservation,
+      courtName: court.name,
+      onJoined: _loadReservations,
     );
   }
 }

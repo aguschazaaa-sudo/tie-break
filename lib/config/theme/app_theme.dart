@@ -27,8 +27,23 @@ class AppTheme {
         backgroundColor: colorScheme.surface,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: AppTextStyles.displayMedium.copyWith(fontSize: 20),
+        titleTextStyle: AppTextStyles.displayMedium.copyWith(
+          fontSize: 20,
+          color: colorScheme.onSurface,
+        ),
         iconTheme: IconThemeData(color: colorScheme.onSurface),
+      ),
+      dropdownMenuTheme: DropdownMenuThemeData(
+        textStyle: TextStyle(color: colorScheme.onSurface),
+        menuStyle: MenuStyle(
+          backgroundColor: WidgetStatePropertyAll(colorScheme.surfaceContainer),
+        ),
+      ),
+      // Adding explicit theme for DropdownButton (older widget used in Profile)
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: colorScheme.surfaceContainer,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -63,6 +78,11 @@ class AppTheme {
           fontSize: 20,
         ),
         iconTheme: IconThemeData(color: colorScheme.onSurface),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: colorScheme.surfaceContainer,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

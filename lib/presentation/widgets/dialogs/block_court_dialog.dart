@@ -99,11 +99,17 @@ class _BlockCourtDialogState extends State<BlockCourtDialog> {
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.sports_tennis),
               ),
+              dropdownColor: Theme.of(context).colorScheme.surface,
               items:
                   widget.courts.map((court) {
                     return DropdownMenuItem(
                       value: court.id,
-                      child: Text(court.name),
+                      child: Text(
+                        court.name,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
                     );
                   }).toList(),
               onChanged: (value) => setState(() => _selectedCourtId = value),
@@ -154,13 +160,22 @@ class _BlockCourtDialogState extends State<BlockCourtDialog> {
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.timer),
               ),
+              dropdownColor: Theme.of(context).colorScheme.surface,
               items:
                   [30, 60, 90, 120, 180, 240, 480].map((minutes) {
                     final label =
                         minutes >= 60
                             ? '${minutes ~/ 60} h ${minutes % 60 > 0 ? '${minutes % 60} m' : ''}'
                             : '$minutes min';
-                    return DropdownMenuItem(value: minutes, child: Text(label));
+                    return DropdownMenuItem(
+                      value: minutes,
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    );
                   }).toList(),
               onChanged: (value) {
                 if (value != null) setState(() => _durationMinutes = value);
@@ -176,14 +191,25 @@ class _BlockCourtDialogState extends State<BlockCourtDialog> {
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.category),
               ),
-              items: const [
+              dropdownColor: Theme.of(context).colorScheme.surface,
+              items: [
                 DropdownMenuItem(
                   value: ReservationType.maintenance,
-                  child: Text('Mantenimiento'),
+                  child: Text(
+                    'Mantenimiento',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
                 ),
                 DropdownMenuItem(
                   value: ReservationType.coaching,
-                  child: Text('Clase / Entrenamiento'),
+                  child: Text(
+                    'Clase / Entrenamiento',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
                 ),
               ],
               onChanged: (value) {

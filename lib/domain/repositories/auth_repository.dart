@@ -39,4 +39,7 @@ abstract class AuthRepository {
   Future<void> removeFollower(String currentUserId, String followerId);
   Future<void> addFavoriteClub(String userId, String clubId);
   Future<void> removeFavoriteClub(String userId, String clubId);
+
+  /// Actualiza el token de FCM para el usuario actual.
+  Future<void> updateFcmToken(String userId, String? token);
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:padel_punilla/domain/enums/club_amenity.dart';
+import 'package:padel_punilla/domain/enums/paddle_category.dart';
 import 'package:padel_punilla/domain/enums/reservation_enums.dart';
 import 'package:padel_punilla/domain/models/club_dashboard_stats.dart';
 import 'package:padel_punilla/domain/models/club_model.dart';
@@ -10,6 +11,7 @@ import 'package:padel_punilla/domain/repositories/club_repository.dart';
 import 'package:padel_punilla/domain/repositories/reservation_repository.dart';
 import 'package:padel_punilla/domain/repositories/season_repository.dart';
 import 'package:padel_punilla/domain/repositories/storage_repository.dart';
+import 'package:padel_punilla/domain/services/match_scoring_service.dart';
 
 /// Provider para gestionar el club y sus reservas.
 ///
@@ -34,9 +36,15 @@ class ClubManagementProvider extends ChangeNotifier {
   final ReservationRepository _reservationRepository;
   final SeasonRepository? _seasonRepository;
   final StorageRepository _storageRepository;
-  // ... (existing code)
 
-  /// Define el ganador de un partido 2vs2
+  /// Define el ganador de un partido 2vs2 y actualiza puntuaciones.
+  ///
+  /// Los puntos se calculan dinámicamente según el nivel (PaddleCategory)
+  /// de los jugadores de cada equipo:
+  /// - Si un equipo más débil gana, recibe más puntos (upset bonus)
+  /// - Si un equipo más fuerte gana, recibe menos puntos
+  /// - Todos reciben puntos para premiar la ocupación de canchas
+  ///
   /// [winningTeam] es 1 para team1, 2 para team2
   Future<void> setMatchWinner(String reservationId, int winningTeam) async {
     final reservation = _reservations.firstWhere((r) => r.id == reservationId);
@@ -52,14 +60,51 @@ class ClubManagementProvider extends ChangeNotifier {
         _club!.id,
       );
       if (activeSeason != null) {
-        final winners =
+        // Obtener los IDs de ganadores y perdedores
+        final winnerIds =
             winningTeam == 1 ? reservation.team1Ids : reservation.team2Ids;
-        final losers =
+        final loserIds =
             winningTeam == 1 ? reservation.team2Ids : reservation.team1Ids;
 
-        // Puntos: Ganador +3, Perdedor +1
-        await _updatePlayersScore(activeSeason.id, winners, 3);
-        await _updatePlayersScore(activeSeason.id, losers, 1);
+        // Obtener datos de todos los jugadores para calcular niveles
+        final allPlayerIds = [...winnerIds, ...loserIds];
+        final players = await _authRepository.getUsersByIds(allPlayerIds);
+
+        // Crear mapa de userId -> category para acceso rápido
+        final categoryMap = <String, PaddleCategory?>{};
+        for (final player in players) {
+          categoryMap[player.id] = player.category;
+        }
+
+        // Calcular niveles de equipo (promedio ponderado)
+        final winnerTeamLevel = MatchScoringService.calculateTeamLevel(
+          categoryMap[winnerIds[0]],
+          categoryMap[winnerIds.length > 1 ? winnerIds[1] : winnerIds[0]],
+        );
+        final loserTeamLevel = MatchScoringService.calculateTeamLevel(
+          categoryMap[loserIds[0]],
+          categoryMap[loserIds.length > 1 ? loserIds[1] : loserIds[0]],
+        );
+
+        // Calcular puntos según diferencia de niveles
+        final points = MatchScoringService.calculateMatchPoints(
+          winnerTeamLevel: winnerTeamLevel,
+          loserTeamLevel: loserTeamLevel,
+        );
+
+        // Actualizar puntos de cada jugador con estadísticas
+        await _updatePlayersScoreWithStats(
+          activeSeason.id,
+          winnerIds,
+          points.winnerPoints,
+          isWinner: true,
+        );
+        await _updatePlayersScoreWithStats(
+          activeSeason.id,
+          loserIds,
+          points.loserPoints,
+          isWinner: false,
+        );
       }
     } catch (e) {
       debugPrint('Error updating scores: $e');
@@ -68,22 +113,22 @@ class ClubManagementProvider extends ChangeNotifier {
     await _loadReservations();
   }
 
-  Future<void> _updatePlayersScore(
+  /// Actualiza puntos y estadísticas de un grupo de jugadores.
+  ///
+  /// Usa operaciones atómicas para evitar race conditions.
+  Future<void> _updatePlayersScoreWithStats(
     String seasonId,
     List<String> userIds,
-    double pointsToAdd,
-  ) async {
+    double pointsToAdd, {
+    required bool isWinner,
+  }) async {
     if (_seasonRepository == null) return;
     for (final userId in userIds) {
-      final currentScoreData = await _seasonRepository!.getUserScore(
+      await _seasonRepository!.updateUserScoreWithStats(
         seasonId,
         userId,
-      );
-      final currentScore = currentScoreData?.score ?? 0.0;
-      await _seasonRepository!.updateUserScore(
-        seasonId,
-        userId,
-        currentScore + pointsToAdd,
+        pointsToAdd,
+        isWinner,
       );
     }
   }

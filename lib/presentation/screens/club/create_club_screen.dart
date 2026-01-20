@@ -181,6 +181,7 @@ class _CreateClubScreenState extends State<CreateClubScreen> {
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.surface,
                   ),
+                  dropdownColor: Theme.of(context).colorScheme.surface,
                   items:
                       Locality.values.map((locality) {
                         return DropdownMenuItem(
@@ -188,6 +189,9 @@ class _CreateClubScreenState extends State<CreateClubScreen> {
                           child: Text(
                             locality.displayName,
                             overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                           ),
                         );
                       }).toList(),

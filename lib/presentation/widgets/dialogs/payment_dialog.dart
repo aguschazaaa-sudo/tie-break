@@ -95,11 +95,17 @@ class _PaymentDialogState extends State<PaymentDialog> {
                 labelText: 'Estado del Pago',
                 border: OutlineInputBorder(),
               ),
+              dropdownColor: Theme.of(context).colorScheme.surface,
               items:
                   PaymentStatus.values.map((status) {
                     return DropdownMenuItem(
                       value: status,
-                      child: Text(status.displayName),
+                      child: Text(
+                        status.displayName,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
                     );
                   }).toList(),
               onChanged: (value) {

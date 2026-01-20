@@ -101,7 +101,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       PaddleCategory.values.map((category) {
                         return DropdownMenuItem(
                           value: category,
-                          child: Text(category.label),
+                          child: Text(
+                            category.label,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
                         );
                       }).toList(),
                   onChanged:
@@ -122,7 +127,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       PlayerGender.values.map((gender) {
                         return DropdownMenuItem(
                           value: gender,
-                          child: Text(gender.label),
+                          child: Text(
+                            gender.label,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
                         );
                       }).toList(),
                   onChanged: (value) => setState(() => _selectedGender = value),
@@ -141,7 +151,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       Locality.values.map((locality) {
                         return DropdownMenuItem(
                           value: locality,
-                          child: Text(locality.displayName),
+                          child: Text(
+                            locality.displayName,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
                         );
                       }).toList(),
                   onChanged:
