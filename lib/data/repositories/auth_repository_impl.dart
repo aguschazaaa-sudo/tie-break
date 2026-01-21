@@ -431,6 +431,8 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (e) {
       throw Exception('Error al quitar club de favoritos: $e');
     }
+  }
+
   @override
   Future<void> updateFcmToken(String userId, String? token) async {
     try {
