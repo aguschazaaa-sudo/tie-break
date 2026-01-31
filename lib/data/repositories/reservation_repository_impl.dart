@@ -128,6 +128,7 @@ class ReservationRepositoryImpl implements ReservationRepository {
               .where('clubId', whereIn: chunk)
               .where('type', isEqualTo: ReservationType.match2vs2.name)
               .where('status', isEqualTo: ReservationStatus.pending.name)
+              .where('isOpenMatch', isEqualTo: true) // Filter by isOpenMatch
               .where('startTime', isGreaterThanOrEqualTo: now.toIso8601String())
               .orderBy('startTime')
               .get();
@@ -139,6 +140,7 @@ class ReservationRepositoryImpl implements ReservationRepository {
               .where('clubId', whereIn: chunk)
               .where('type', isEqualTo: ReservationType.falta1.name)
               .where('status', isEqualTo: ReservationStatus.pending.name)
+              .where('isOpenMatch', isEqualTo: true) // Filter by isOpenMatch
               .where('startTime', isGreaterThanOrEqualTo: now.toIso8601String())
               .orderBy('startTime')
               .get();
@@ -192,10 +194,23 @@ class ReservationRepositoryImpl implements ReservationRepository {
               ? (reservation.team1Ids.length >= 2 && newTeam2Ids.length >= 2)
               : totalPlayers >= 4;
 
-      // 4. Actualizar con los nuevos datos
+      // 4. Calcular isOpenMatch (Lógica duplicada de Service por seguridad en transacción)
+      bool newIsOpenMatch = reservation.isOpenMatch;
+      if (reservation.type == ReservationType.falta1) {
+        newIsOpenMatch = false; // Se cierra al primer join
+      } else if (reservation.type == ReservationType.match2vs2) {
+        if (isComplete) {
+          newIsOpenMatch = false;
+        }
+      } else if (isComplete) {
+        newIsOpenMatch = false;
+      }
+
+      // 5. Actualizar con los nuevos datos
       transaction.update(docRef, {
         'team2Ids': newTeam2Ids,
         if (isComplete) 'status': ReservationStatus.approved.name,
+        'isOpenMatch': newIsOpenMatch,
       });
 
       // 5. Crear notificaciones para los miembros del team1 si el partido se completó

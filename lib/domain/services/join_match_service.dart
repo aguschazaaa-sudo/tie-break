@@ -14,6 +14,7 @@ class JoinMatchService {
   /// Retorna un mensaje de error si la validación falla.
   ///
   /// Validaciones realizadas:
+  /// - La reserva debe estar abierta (isOpenMatch == true)
   /// - Usuario no está ya en la reserva (team1 o team2)
   /// - Si es womenOnly, el usuario debe ser mujer
   /// - Si es 2vs2, debe proporcionar un partnerId válido
@@ -25,6 +26,11 @@ class JoinMatchService {
     required String? partnerId,
     required List<ReservationModel> userReservations,
   }) {
+    // Validación 0: La reserva debe estar abierta para nuevos jugadores
+    if (!reservation.isOpenMatch) {
+      return 'El partido ya no busca jugadores';
+    }
+
     // Validación 1: Usuario no está ya en la reserva
     if (reservation.team1Ids.contains(currentUser.id) ||
         reservation.team2Ids.contains(currentUser.id)) {
@@ -86,7 +92,30 @@ class JoinMatchService {
     final newStatus =
         isMatchComplete ? ReservationStatus.approved : reservation.status;
 
-    return reservation.copyWith(team2Ids: newTeam2Ids, status: newStatus);
+    // Lógica para cerrar el partido (isOpenMatch = false)
+    bool newIsOpenMatch = reservation.isOpenMatch;
+
+    if (reservation.type == ReservationType.falta1) {
+      // Falta1: Se cierra inmediatamente después de que ALGUIEN se una.
+      // "se completa con el primero que se suma y se cierra el slot"
+      newIsOpenMatch = false;
+    } else if (reservation.type == ReservationType.match2vs2) {
+      // 2vs2: Se cierra solo si está completo (2 vs 2)
+      if (isMatchComplete) {
+        newIsOpenMatch = false;
+      }
+    } else {
+      // Para otros tipos, si está completo se cierra
+      if (isMatchComplete) {
+        newIsOpenMatch = false;
+      }
+    }
+
+    return reservation.copyWith(
+      team2Ids: newTeam2Ids,
+      status: newStatus,
+      isOpenMatch: newIsOpenMatch,
+    );
   }
 
   /// Verifica si hay reservas que se solapen en horario.
@@ -144,6 +173,9 @@ class JoinMatchService {
         return team1Count >= 2 && team2Count >= 2;
       case ReservationType.falta1:
         // Falta1 necesita 4 jugadores en total
+        // NOTA: Esta lógica es para saber si el partido en SÍ está completo para jugarse (status approved),
+        // no necesariamente si se cerró la búsqueda (isOpenMatch), aunque suelen coincidir
+        // excepto en el caso especial de Falta 1 donde cerramos la búsqueda al primer join.
         return totalPlayers >= 4;
       default:
         // Para otros tipos, siempre está completo

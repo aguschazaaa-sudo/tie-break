@@ -82,6 +82,27 @@ void main() {
         expect(result, isNull);
       });
 
+      test('should return error when isOpenMatch is false', () {
+        // Arrange
+        var reservation = createReservation(type: ReservationType.falta1);
+        reservation = reservation.copyWith(
+          isOpenMatch: false,
+        ); // Cerrada manually
+        final user = createUser(id: 'user2');
+
+        // Act
+        final result = service.validateJoin(
+          reservation: reservation,
+          currentUser: user,
+          partnerId: null,
+          userReservations: [],
+        );
+
+        // Assert
+        expect(result, isNotNull);
+        expect(result, contains('busca jugadores'));
+      });
+
       test('should return null when user can join 2vs2 with partner', () {
         // Arrange
         final reservation = createReservation(type: ReservationType.match2vs2);
@@ -286,6 +307,28 @@ void main() {
         expect(result.team2Ids, contains('user2'));
       });
 
+      test('should set isOpenMatch to false for Falta 1 after one join', () {
+        // Arrange - Falta 1, solo 1 jugador en team1. Total 1.
+        // Al unirse user2, serán 2. NO está completo el match (faltan 2 más),
+        // pero la regla de negocio dice "se cierra el slot".
+        final reservation = createReservation(
+          type: ReservationType.falta1,
+          team1Ids: ['user1'],
+          team2Ids: [],
+        );
+
+        // Act
+        final result = service.applyJoin(
+          reservation: reservation,
+          userId: 'user2',
+          partnerId: null,
+        );
+
+        // Assert
+        expect(result.isOpenMatch, isFalse); // Debe cerrarse
+        expect(result.team2Ids, contains('user2'));
+      });
+
       test('should add user and partner to team2Ids for 2vs2', () {
         // Arrange
         final reservation = createReservation(
@@ -346,6 +389,7 @@ void main() {
         // Assert
         expect(result.status, ReservationStatus.approved);
         expect(result.team2Ids.length, 2);
+        expect(result.isOpenMatch, isFalse); // También debe cerrarse
       });
     });
   });

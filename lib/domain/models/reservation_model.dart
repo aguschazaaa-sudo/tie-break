@@ -21,9 +21,18 @@ class ReservationModel {
     this.team2Ids = const [],
     this.womenOnly = false,
     this.winnerTeam,
+    this.isOpenMatch = true,
   });
 
   factory ReservationModel.fromMap(Map<String, dynamic> map) {
+    // Default logic for isOpenMatch if not present:
+    // If status is pending, we assume it's open (backwards compatibility).
+    final status = ReservationStatus.values.firstWhere(
+      (e) => e.name == map['status'],
+      orElse: () => ReservationStatus.pending,
+    );
+    final isOpenMatchDefault = status == ReservationStatus.pending;
+
     return ReservationModel(
       id: map['id'] as String? ?? '',
       courtId: map['courtId'] as String? ?? '',
@@ -34,10 +43,7 @@ class ReservationModel {
       startTime: DateTime.parse(map['startTime'] as String),
       durationMinutes: map['durationMinutes'] as int? ?? 60,
       createdAt: DateTime.parse(map['createdAt'] as String),
-      status: ReservationStatus.values.firstWhere(
-        (e) => e.name == map['status'],
-        orElse: () => ReservationStatus.pending,
-      ),
+      status: status,
       paymentStatus: PaymentStatus.values.firstWhere(
         (e) => e.name == map['paymentStatus'],
         orElse: () => PaymentStatus.pending,
@@ -53,6 +59,7 @@ class ReservationModel {
       team2Ids: List<String>.from((map['team2Ids'] as List?) ?? []),
       womenOnly: map['womenOnly'] as bool? ?? false,
       winnerTeam: map['winnerTeam'] as int?,
+      isOpenMatch: map['isOpenMatch'] as bool? ?? isOpenMatchDefault,
     );
   }
   final String id;
@@ -78,6 +85,10 @@ class ReservationModel {
 
   /// Equipo ganador (1 o 2). Null si no se ha jugado o definido.
   final int? winnerTeam;
+
+  /// Indica si el partido está buscando jugadores activamente.
+  /// Si es false, no debería aparecer en las búsquedas de "Unirse a partido".
+  final bool isOpenMatch;
 
   double get remainingAmount => price - paidAmount;
 
@@ -112,6 +123,7 @@ class ReservationModel {
       'team2Ids': team2Ids,
       'womenOnly': womenOnly,
       'winnerTeam': winnerTeam,
+      'isOpenMatch': isOpenMatch,
     };
   }
 
@@ -135,6 +147,7 @@ class ReservationModel {
     List<String>? team2Ids,
     bool? womenOnly,
     int? winnerTeam,
+    bool? isOpenMatch,
   }) {
     return ReservationModel(
       id: id ?? this.id,
@@ -156,6 +169,7 @@ class ReservationModel {
       team2Ids: team2Ids ?? this.team2Ids,
       womenOnly: womenOnly ?? this.womenOnly,
       winnerTeam: winnerTeam ?? this.winnerTeam,
+      isOpenMatch: isOpenMatch ?? this.isOpenMatch,
     );
   }
 
@@ -185,7 +199,8 @@ class ReservationModel {
         other.team2Ids.length == team2Ids.length &&
         other.team2Ids.every(team2Ids.contains) &&
         other.womenOnly == womenOnly &&
-        other.winnerTeam == winnerTeam;
+        other.winnerTeam == winnerTeam &&
+        other.isOpenMatch == isOpenMatch;
   }
 
   @override
@@ -208,11 +223,12 @@ class ReservationModel {
         Object.hashAll(team1Ids) ^
         Object.hashAll(team2Ids) ^
         womenOnly.hashCode ^
-        winnerTeam.hashCode;
+        winnerTeam.hashCode ^
+        isOpenMatch.hashCode;
   }
 
   @override
   String toString() {
-    return 'ReservationModel(id: $id, courtId: $courtId, clubId: $clubId, userId: $userId, participantIds: $participantIds, reservedDate: $reservedDate, startTime: $startTime, durationMinutes: $durationMinutes, createdAt: $createdAt, status: $status, paymentStatus: $paymentStatus, cancellationReason: $cancellationReason, price: $price, paidAmount: $paidAmount, type: $type, team1Ids: $team1Ids, team2Ids: $team2Ids, womenOnly: $womenOnly, winnerTeam: $winnerTeam)';
+    return 'ReservationModel(id: $id, courtId: $courtId, clubId: $clubId, userId: $userId, participantIds: $participantIds, reservedDate: $reservedDate, startTime: $startTime, durationMinutes: $durationMinutes, createdAt: $createdAt, status: $status, paymentStatus: $paymentStatus, cancellationReason: $cancellationReason, price: $price, paidAmount: $paidAmount, type: $type, team1Ids: $team1Ids, team2Ids: $team2Ids, womenOnly: $womenOnly, winnerTeam: $winnerTeam, isOpenMatch: $isOpenMatch)';
   }
 }
