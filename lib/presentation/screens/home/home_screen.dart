@@ -19,6 +19,8 @@ import 'package:padel_punilla/presentation/screens/profile/profile_screen.dart';
 import 'package:padel_punilla/presentation/screens/season/leaderboard_screen.dart';
 import 'package:padel_punilla/presentation/widgets/ambient_glow.dart';
 import 'package:padel_punilla/presentation/widgets/logo.dart';
+import 'package:padel_punilla/presentation/providers/notification_provider.dart';
+import 'package:padel_punilla/presentation/screens/notifications/notifications_screen.dart';
 import 'package:provider/provider.dart';
 
 /// Pantalla principal de la aplicación (Home).
@@ -407,6 +409,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute<void>(
                   builder: (context) => const ProfileScreen(),
                 ),
+              );
+            },
+          ),
+          // Botón de notificaciones
+          Consumer<NotificationProvider>(
+            builder: (context, provider, child) {
+              return IconButton(
+                icon: Badge(
+                  isLabelVisible: provider.unreadCount > 0,
+                  label: Text('${provider.unreadCount}'),
+                  child: const Icon(Icons.notifications_rounded),
+                ),
+                tooltip: 'Notificaciones',
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (context) => const NotificationsScreen(),
+                    ),
+                  );
+                },
               );
             },
           ),

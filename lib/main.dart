@@ -19,10 +19,14 @@ import 'package:padel_punilla/domain/repositories/season_repository.dart';
 import 'package:padel_punilla/domain/repositories/storage_repository.dart';
 import 'package:padel_punilla/domain/services/connectivity_service.dart';
 import 'package:padel_punilla/domain/services/reservation_service.dart';
+import 'package:padel_punilla/domain/repositories/notification_repository.dart';
+import 'package:padel_punilla/data/repositories/notification_repository_impl.dart';
+import 'package:padel_punilla/presentation/providers/notification_provider.dart';
 import 'package:padel_punilla/firebase_options.dart';
 import 'package:padel_punilla/presentation/providers/connectivity_provider.dart';
 import 'package:padel_punilla/presentation/widgets/auth_wrapper.dart';
 import 'package:padel_punilla/presentation/widgets/connectivity_banner.dart';
+import 'package:padel_punilla/presentation/screens/my_reservations/my_reservations_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -73,11 +77,49 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.dark;
   late final ConnectivityServiceImpl _connectivityService;
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
     super.initState();
     _connectivityService = ConnectivityServiceImpl();
+    _setupFirebaseMessaging();
+  }
+
+  void _setupFirebaseMessaging() {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      final notification = message.notification;
+      final android = message.notification?.android;
+
+      if (notification != null && android != null) {
+        _scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            content: Text(notification.title ?? 'Nueva notificación'),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor:
+                _themeMode == ThemeMode.dark
+                    ? AppTheme.darkTheme.colorScheme.primaryContainer
+                    : AppTheme.lightTheme.colorScheme.primaryContainer,
+            action: SnackBarAction(
+              label: 'VER',
+              textColor:
+                  _themeMode == ThemeMode.dark
+                      ? AppTheme.darkTheme.colorScheme.onPrimaryContainer
+                      : AppTheme.lightTheme.colorScheme.onPrimaryContainer,
+              onPressed: () {
+                _navigatorKey.currentState?.push(
+                  MaterialPageRoute<void>(
+                    builder: (context) => const MyReservationsScreen(),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      }
+    });
   }
 
   @override
@@ -115,8 +157,20 @@ class _MyAppState extends State<MyApp> {
         ),
         Provider<SeasonRepository>(create: (_) => SeasonRepositoryImpl()),
         Provider<StorageRepository>(create: (_) => StorageRepository()),
+        Provider<NotificationRepository>(
+          create: (_) => NotificationRepositoryImpl(),
+        ),
+        ChangeNotifierProvider<NotificationProvider>(
+          create:
+              (context) => NotificationProvider(
+                notificationRepository: context.read<NotificationRepository>(),
+                authRepository: context.read<AuthRepository>(),
+              ),
+        ),
       ],
       child: MaterialApp(
+        scaffoldMessengerKey: _scaffoldMessengerKey,
+        navigatorKey: _navigatorKey,
         title: 'Padel Punilla',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
