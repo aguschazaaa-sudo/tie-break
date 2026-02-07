@@ -90,9 +90,18 @@ service cloud.firestore {
         (request.auth.uid == resource.data.userId && 
          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'cancellationReason']) &&
          request.resource.data.status == 'cancelled') ||
-        // Anyone can join a match (update team2Ids, optionally status)
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['team2Ids', 'status'])
+        // Anyone can join a match (update team2Ids, optionally status, isOpenMatch)
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['team2Ids', 'status', 'isOpenMatch'])
       );
+    }
+
+    // Rules for Notifications collection
+    match /notifications/{notificationId} {
+      // Authenticated users can create notifications (e.g. when joining a match)
+      allow create: if isAuthenticated();
+      
+      // Users can read and delete their own notifications
+      allow read, delete: if isAuthenticated() && resource.data.receiverId == request.auth.uid;
     }
   }
 }

@@ -67,16 +67,38 @@ class ReservationRepositoryImpl implements ReservationRepository {
 
   @override
   Future<List<ReservationModel>> getReservationsByUser(String userId) async {
-    final snapshot =
+    // Queries for reservations where the user is in team1 or team2
+    final team1Snapshot =
         await _firestore
             .collection('reservations')
-            .where('userId', isEqualTo: userId)
-            .orderBy('startTime', descending: true)
+            .where('team1Ids', arrayContains: userId)
             .get();
 
-    return snapshot.docs
-        .map((doc) => ReservationModel.fromMap(doc.data()))
-        .toList();
+    final team2Snapshot =
+        await _firestore
+            .collection('reservations')
+            .where('team2Ids', arrayContains: userId)
+            .get();
+
+    // Merge and deduplicate
+    final allDocs = <String, ReservationModel>{};
+
+    for (var doc in team1Snapshot.docs) {
+      final reservation = ReservationModel.fromMap(doc.data());
+      allDocs[reservation.id] = reservation;
+    }
+
+    for (var doc in team2Snapshot.docs) {
+      final reservation = ReservationModel.fromMap(doc.data());
+      allDocs[reservation.id] = reservation; // Overwrite if exists (same data)
+    }
+
+    final result = allDocs.values.toList();
+
+    // Sort by startTime descending (most recent first)
+    result.sort((a, b) => b.startTime.compareTo(a.startTime));
+
+    return result;
   }
 
   @override
@@ -234,14 +256,14 @@ class ReservationRepositoryImpl implements ReservationRepository {
               .doc(notificationId);
           transaction.set(notificationRef, notification.toMap());
         }
-      } else if (reservation.type == ReservationType.falta1 && isComplete) {
+      } else if (reservation.type == ReservationType.falta1) {
         for (final receiverId in reservation.team1Ids) {
           final notificationId = const Uuid().v4();
           final notification = NotificationModel(
             id: notificationId,
-            title: '¡Partido Completado!',
+            title: '¡Falta 1 Completado!',
             body:
-                'Alguien se ha unido para completar el Falta 1. ¡Ya pueden jugar!',
+                'Alguien se ha unido a tu partido de Falta 1. ¡Ya tienen el jugador que faltaba!',
             receiverId: receiverId,
             createdAt: DateTime.now(),
             reservationId: reservationId,
