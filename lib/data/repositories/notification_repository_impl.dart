@@ -16,9 +16,18 @@ class NotificationRepositoryImpl implements NotificationRepository {
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs
-              .map((doc) => NotificationModel.fromMap(doc.data()))
-              .toList();
+          return snapshot.docs.map((doc) {
+            final data = doc.data();
+            data['id'] = doc.id;
+
+            // Convert Timestamp to String for createdAt if necessary
+            if (data['createdAt'] is Timestamp) {
+              data['createdAt'] =
+                  (data['createdAt'] as Timestamp).toDate().toIso8601String();
+            }
+
+            return NotificationModel.fromMap(data);
+          }).toList();
         });
   }
 

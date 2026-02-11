@@ -102,6 +102,11 @@ service cloud.firestore {
       
       // Users can read and delete their own notifications
       allow read, delete: if isAuthenticated() && resource.data.receiverId == request.auth.uid;
+      
+      // Users can update their own notifications (only isRead field for marking as read)
+      allow update: if isAuthenticated() && 
+        resource.data.receiverId == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead']);
     }
   }
 }

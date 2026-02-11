@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:padel_punilla/domain/models/notification_model.dart';
+import 'package:padel_punilla/presentation/screens/notifications/widgets/notification_reservation_card.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class NotificationItem extends StatelessWidget {
@@ -79,6 +80,10 @@ class NotificationItem extends StatelessWidget {
                               : colorScheme.onSurface,
                     ),
                   ),
+                  if (notification.reservationId != null)
+                    NotificationReservationCard(
+                      reservationId: notification.reservationId!,
+                    ),
                 ],
               ),
             ),

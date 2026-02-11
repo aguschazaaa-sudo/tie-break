@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:padel_punilla/config/theme/app_theme.dart';
@@ -29,41 +31,10 @@ import 'package:padel_punilla/presentation/widgets/connectivity_banner.dart';
 import 'package:padel_punilla/presentation/screens/my_reservations/my_reservations_screen.dart';
 import 'package:provider/provider.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // Inicializar Firebase Messaging
-  final messaging = FirebaseMessaging.instance;
-
-  // Solicitar permisos (especialmente importante en iOS)
-  await messaging.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
-
-  // Inicializar datos de formateo de fecha para español
-  await initializeDateFormatting('es');
-
-  // Habilitar persistencia offline de Firestore
-  FirebaseFirestore.instance.settings = const Settings(
-    persistenceEnabled: true,
-    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
-  );
-
-  // Pre-cargar Google Fonts para evitar FOUT (Flash of Unstyled Text)
-  await Future.wait([
-    GoogleFonts.pendingFonts([
-      GoogleFonts.spaceGrotesk(),
-      GoogleFonts.roboto(),
-    ]),
-  ]);
-
+void main() {
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  // Preserve native splash until we are ready to remove it
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(const MyApp());
 }
 
@@ -81,14 +52,79 @@ class _MyAppState extends State<MyApp> {
       GlobalKey<ScaffoldMessengerState>();
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
+  bool _isInitialized = false;
+
   @override
   void initState() {
     super.initState();
     _connectivityService = ConnectivityServiceImpl();
-    _setupFirebaseMessaging();
+    _initializeApp();
   }
 
-  void _setupFirebaseMessaging() {
+  Future<void> _initializeApp() async {
+    try {
+      // 1. Initialize Firebase Core (Critical)
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+
+      // 2. Start parallel initialization of non-critical components
+      // We don't await these immediately to allow the UI to start handling basic frame
+      await Future.wait([
+        _initializeLocalization(),
+        _initializeFonts(),
+        _setupFirebaseMessaging(),
+        _configureFirestore(),
+      ]);
+    } catch (e) {
+      debugPrint('Initialization error: $e');
+      // Handle critical errors (maybe show an error screen)
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+        });
+        FlutterNativeSplash.remove();
+      }
+    }
+  }
+
+  Future<void> _initializeLocalization() async {
+    await initializeDateFormatting('es');
+  }
+
+  Future<void> _initializeFonts() async {
+    // Pre-load Google Fonts to prevent FOUT
+    await Future.wait([
+      GoogleFonts.pendingFonts([
+        GoogleFonts.spaceGrotesk(),
+        GoogleFonts.roboto(),
+      ]),
+    ]);
+  }
+
+  Future<void> _configureFirestore() async {
+    // Enable offline persistence
+    FirebaseFirestore.instance.settings = const Settings(
+      persistenceEnabled: true,
+      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+    );
+  }
+
+  Future<void> _setupFirebaseMessaging() async {
+    final messaging = FirebaseMessaging.instance;
+
+    // Request permissions (non-blocking if possible, but await to ensure decision)
+    await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       final notification = message.notification;
       final android = message.notification?.android;
@@ -137,6 +173,30 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_isInitialized) {
+      // Show a loading screen while initializing
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: _themeMode,
+        home: Scaffold(
+          backgroundColor:
+              _themeMode == ThemeMode.dark
+                  ? const Color(0xFF0A1628) // Helper for dark bg match
+                  : Colors.white,
+          body: Center(
+            child: CircularProgressIndicator(
+              color:
+                  _themeMode == ThemeMode.dark
+                      ? const Color(0xFF0D7377)
+                      : AppTheme.lightTheme.colorScheme.primary,
+            ),
+          ),
+        ),
+      );
+    }
+
     return MultiProvider(
       providers: [
         // Connectivity

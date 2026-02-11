@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:padel_punilla/domain/enums/reservation_enums.dart';
-import 'package:padel_punilla/domain/models/notification_model.dart';
 import 'package:padel_punilla/domain/models/reservation_model.dart';
 import 'package:padel_punilla/domain/repositories/reservation_repository.dart';
-import 'package:uuid/uuid.dart';
 
 class ReservationRepositoryImpl implements ReservationRepository {
   ReservationRepositoryImpl({FirebaseFirestore? firestore})
@@ -235,46 +233,8 @@ class ReservationRepositoryImpl implements ReservationRepository {
         'isOpenMatch': newIsOpenMatch,
       });
 
-      // 5. Crear notificaciones para los miembros del team1 si el partido se completó
-      // O si se unió alguien (según el requerimiento: "cuando a un 2 vs 2 se le suma la segunda pareja notficar a la primera")
-      if (reservation.type == ReservationType.match2vs2 &&
-          newTeam2Ids.length == 2) {
-        for (final receiverId in reservation.team1Ids) {
-          final notificationId = const Uuid().v4();
-          final notification = NotificationModel(
-            id: notificationId,
-            title: '¡Partido Completado!',
-            body:
-                'Una pareja se ha unido a tu partido de 2vs2. ¡Ya pueden jugar!',
-            receiverId: receiverId,
-            createdAt: DateTime.now(),
-            reservationId: reservationId,
-          );
-
-          final notificationRef = _firestore
-              .collection('notifications')
-              .doc(notificationId);
-          transaction.set(notificationRef, notification.toMap());
-        }
-      } else if (reservation.type == ReservationType.falta1) {
-        for (final receiverId in reservation.team1Ids) {
-          final notificationId = const Uuid().v4();
-          final notification = NotificationModel(
-            id: notificationId,
-            title: '¡Falta 1 Completado!',
-            body:
-                'Alguien se ha unido a tu partido de Falta 1. ¡Ya tienen el jugador que faltaba!',
-            receiverId: receiverId,
-            createdAt: DateTime.now(),
-            reservationId: reservationId,
-          );
-
-          final notificationRef = _firestore
-              .collection('notifications')
-              .doc(notificationId);
-          transaction.set(notificationRef, notification.toMap());
-        }
-      }
+      // Nota: Las notificaciones son manejadas por la Cloud Function onMatchFull
+      // que detecta cambios en team2Ids y genera las notificaciones correspondientes
     });
   }
 }

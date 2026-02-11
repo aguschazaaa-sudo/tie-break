@@ -3,7 +3,10 @@ import 'package:padel_punilla/domain/models/court_model.dart';
 import 'package:padel_punilla/domain/repositories/court_repository.dart';
 
 class CourtRepositoryImpl implements CourtRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  CourtRepositoryImpl({FirebaseFirestore? firestore})
+    : _firestore = firestore ?? FirebaseFirestore.instance;
+
+  final FirebaseFirestore _firestore;
 
   @override
   Future<void> createCourt(String clubId, CourtModel court) async {
@@ -60,5 +63,21 @@ class CourtRepositoryImpl implements CourtRepository {
                   .map((doc) => CourtModel.fromMap(doc.data()))
                   .toList(),
         );
+  }
+
+  @override
+  Future<CourtModel?> getCourt(String clubId, String courtId) async {
+    final doc =
+        await _firestore
+            .collection('clubs')
+            .doc(clubId)
+            .collection('courts')
+            .doc(courtId)
+            .get();
+
+    if (doc.exists && doc.data() != null) {
+      return CourtModel.fromMap(doc.data()!);
+    }
+    return null;
   }
 }

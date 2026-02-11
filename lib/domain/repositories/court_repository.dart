@@ -5,5 +5,6 @@ abstract class CourtRepository {
   Future<List<CourtModel>> getCourts(String clubId);
   Future<void> updateCourt(String clubId, CourtModel court);
   Future<void> deleteCourt(String clubId, String courtId);
+  Future<CourtModel?> getCourt(String clubId, String courtId);
   Stream<List<CourtModel>> getCourtsStream(String clubId);
 }
