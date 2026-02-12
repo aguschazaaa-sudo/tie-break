@@ -108,26 +108,39 @@ exports.onMatchFull = functions.firestore
                 }
             }
         }
-        // Lógica para falta1: se completa cuando alguien se une (team2 aumenta)
+        // Lógica para falta1: usa participantIds (no teams)
+        // Al unirse alguien, notificar al owner y participantes existentes
+        // (NO notificar a quien se acaba de unir)
         else if (newData.type === 'falta1') {
-            // Verificar si alguien nuevo se unió a team2
-            if (newTeam2.length > oldTeam2.length) {
+            const newParticipants = newData.participantIds || [];
+            const oldParticipants = oldData.participantIds || [];
+
+            // Verificar si alguien nuevo se unió a participantIds
+            if (newParticipants.length > oldParticipants.length) {
                 // Encontrar quién se unió
-                const joinedUserId = newTeam2.find(id => !oldTeam2.includes(id));
+                const joinedUserId = newParticipants.find(id => !oldParticipants.includes(id));
 
                 // Solo notificar si el que se unió NO es el owner
                 if (joinedUserId && joinedUserId !== newData.userId) {
                     console.log(`Falta1 completado: ${reservationId}. Nuevo jugador: ${joinedUserId}`);
 
-                    // Notificar a todos los participantes (owner + el que se unió)
-                    for (const userId of allParticipants) {
+                    // Construir lista de destinatarios: owner + participantes existentes
+                    // (excluimos al que se acaba de unir, ya lo sabe)
+                    const recipientIds = new Set();
+                    recipientIds.add(newData.userId); // Owner siempre recibe
+                    for (const pid of oldParticipants) {
+                        recipientIds.add(pid); // Participantes previos
+                    }
+                    recipientIds.delete(joinedUserId); // No notificar al que se unió
+
+                    for (const userId of recipientIds) {
                         notificationBatch.push(
                             admin.firestore().collection('notifications').add({
                                 receiverId: userId,
-                                type: 'matchFull',
+                                type: 'matchJoined',
                                 reservationId: reservationId,
-                                title: '¡Partido confirmado!',
-                                body: 'Se ha completado el cupo para tu partido.',
+                                title: '¡Jugador encontrado!',
+                                body: 'Alguien se unió a tu partido Falta 1.',
                                 createdAt: admin.firestore.FieldValue.serverTimestamp(),
                                 read: false,
                             })

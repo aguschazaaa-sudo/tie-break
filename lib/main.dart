@@ -125,25 +125,77 @@ class _MyAppState extends State<MyApp> {
       sound: true,
     );
 
+    // Listener para mensajes recibidos en foreground (app abierta y enfocada).
+    // Se usa inverseSurface/inversePrimary que son los colores M3 diseñados
+    // específicamente para SnackBars, garantizando alto contraste en ambos modos.
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       final notification = message.notification;
-      final android = message.notification?.android;
 
-      if (notification != null && android != null) {
+      if (notification != null) {
+        // Obtener el colorScheme activo según el modo actual
+        final colorScheme =
+            _themeMode == ThemeMode.dark
+                ? AppTheme.darkTheme.colorScheme
+                : AppTheme.lightTheme.colorScheme;
+
         _scaffoldMessengerKey.currentState?.showSnackBar(
           SnackBar(
-            content: Text(notification.title ?? 'Nueva notificación'),
+            content: Row(
+              children: [
+                // Ícono de notificación con color que destaque
+                Icon(
+                  Icons.notifications_active_rounded,
+                  color: colorScheme.inversePrimary,
+                  size: 24,
+                ),
+                const SizedBox(width: 12),
+                // Título y cuerpo de la notificación
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        notification.title ?? 'Nueva notificación',
+                        style: TextStyle(
+                          color: colorScheme.onInverseSurface,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      if (notification.body != null &&
+                          notification.body!.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Text(
+                            notification.body!,
+                            style: TextStyle(
+                              color: colorScheme.onInverseSurface.withValues(
+                                alpha: 0.85,
+                              ),
+                              fontSize: 12,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            // inverseSurface es el fondo estándar M3 para SnackBars
+            backgroundColor: colorScheme.inverseSurface,
             behavior: SnackBarBehavior.floating,
-            backgroundColor:
-                _themeMode == ThemeMode.dark
-                    ? AppTheme.darkTheme.colorScheme.primaryContainer
-                    : AppTheme.lightTheme.colorScheme.primaryContainer,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            elevation: 6,
+            duration: const Duration(seconds: 5),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             action: SnackBarAction(
               label: 'VER',
-              textColor:
-                  _themeMode == ThemeMode.dark
-                      ? AppTheme.darkTheme.colorScheme.onPrimaryContainer
-                      : AppTheme.lightTheme.colorScheme.onPrimaryContainer,
+              textColor: colorScheme.inversePrimary,
               onPressed: () {
                 _navigatorKey.currentState?.push(
                   MaterialPageRoute<void>(

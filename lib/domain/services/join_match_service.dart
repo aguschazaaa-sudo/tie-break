@@ -32,8 +32,11 @@ class JoinMatchService {
     }
 
     // Validación 1: Usuario no está ya en la reserva
+    // (puede estar en team1, team2, o participantIds según el tipo)
     if (reservation.team1Ids.contains(currentUser.id) ||
-        reservation.team2Ids.contains(currentUser.id)) {
+        reservation.team2Ids.contains(currentUser.id) ||
+        reservation.participantIds.contains(currentUser.id) ||
+        reservation.userId == currentUser.id) {
       return 'Ya formas parte de este partido';
     }
 
@@ -73,7 +76,19 @@ class JoinMatchService {
     required String userId,
     required String? partnerId,
   }) {
-    // Crear la nueva lista de team2Ids
+    // Falta1: el jugador va a participantIds (teams solo para 2vs2)
+    if (reservation.type == ReservationType.falta1) {
+      final newParticipantIds = List<String>.from(reservation.participantIds);
+      newParticipantIds.add(userId);
+
+      // Falta1 se cierra inmediatamente al primer join
+      return reservation.copyWith(
+        participantIds: newParticipantIds,
+        isOpenMatch: false,
+      );
+    }
+
+    // 2vs2 y otros tipos: el jugador (y partner) van a team2Ids
     final newTeam2Ids = List<String>.from(reservation.team2Ids);
     newTeam2Ids.add(userId);
 
@@ -94,21 +109,8 @@ class JoinMatchService {
 
     // Lógica para cerrar el partido (isOpenMatch = false)
     bool newIsOpenMatch = reservation.isOpenMatch;
-
-    if (reservation.type == ReservationType.falta1) {
-      // Falta1: Se cierra inmediatamente después de que ALGUIEN se una.
-      // "se completa con el primero que se suma y se cierra el slot"
+    if (isMatchComplete) {
       newIsOpenMatch = false;
-    } else if (reservation.type == ReservationType.match2vs2) {
-      // 2vs2: Se cierra solo si está completo (2 vs 2)
-      if (isMatchComplete) {
-        newIsOpenMatch = false;
-      }
-    } else {
-      // Para otros tipos, si está completo se cierra
-      if (isMatchComplete) {
-        newIsOpenMatch = false;
-      }
     }
 
     return reservation.copyWith(

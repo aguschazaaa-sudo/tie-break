@@ -65,21 +65,35 @@ class ReservationRepositoryImpl implements ReservationRepository {
 
   @override
   Future<List<ReservationModel>> getReservationsByUser(String userId) async {
-    // Queries for reservations where the user is in team1 or team2
+    // Query 1: Reservas donde el usuario es owner
+    // (cubre Falta1 y Normal donde el creador no está en teams)
+    final ownerSnapshot =
+        await _firestore
+            .collection('reservations')
+            .where('userId', isEqualTo: userId)
+            .get();
+
+    // Query 2: Reservas donde el usuario está en team1 (2vs2)
     final team1Snapshot =
         await _firestore
             .collection('reservations')
             .where('team1Ids', arrayContains: userId)
             .get();
 
+    // Query 3: Reservas donde el usuario está en team2 (se unió a 2vs2)
     final team2Snapshot =
         await _firestore
             .collection('reservations')
             .where('team2Ids', arrayContains: userId)
             .get();
 
-    // Merge and deduplicate
+    // Merge y deduplicar por ID
     final allDocs = <String, ReservationModel>{};
+
+    for (var doc in ownerSnapshot.docs) {
+      final reservation = ReservationModel.fromMap(doc.data());
+      allDocs[reservation.id] = reservation;
+    }
 
     for (var doc in team1Snapshot.docs) {
       final reservation = ReservationModel.fromMap(doc.data());
@@ -88,12 +102,12 @@ class ReservationRepositoryImpl implements ReservationRepository {
 
     for (var doc in team2Snapshot.docs) {
       final reservation = ReservationModel.fromMap(doc.data());
-      allDocs[reservation.id] = reservation; // Overwrite if exists (same data)
+      allDocs[reservation.id] = reservation;
     }
 
     final result = allDocs.values.toList();
 
-    // Sort by startTime descending (most recent first)
+    // Ordenar por startTime descendente (más reciente primero)
     result.sort((a, b) => b.startTime.compareTo(a.startTime));
 
     return result;
@@ -200,33 +214,34 @@ class ReservationRepositoryImpl implements ReservationRepository {
 
       final reservation = ReservationModel.fromMap(snapshot.data()!);
 
-      // 2. Calcular nuevos team2Ids
+      // Falta1: el jugador va a participantIds (teams solo aplican a 2vs2)
+      if (reservation.type == ReservationType.falta1) {
+        final newParticipantIds = List<String>.from(reservation.participantIds);
+        newParticipantIds.add(userId);
+
+        // Falta1 se cierra inmediatamente al primer join
+        transaction.update(docRef, {
+          'participantIds': newParticipantIds,
+          'isOpenMatch': false,
+        });
+        return;
+      }
+
+      // 2vs2 y otros: el jugador (y partner) van a team2Ids
       final newTeam2Ids = List<String>.from(reservation.team2Ids);
       newTeam2Ids.add(userId);
       if (partnerId != null) {
         newTeam2Ids.add(partnerId);
       }
 
-      // 3. Determinar si el partido está completo
-      final totalPlayers = reservation.team1Ids.length + newTeam2Ids.length;
+      // Determinar si el partido está completo
       final isComplete =
-          reservation.type == ReservationType.match2vs2
-              ? (reservation.team1Ids.length >= 2 && newTeam2Ids.length >= 2)
-              : totalPlayers >= 4;
+          reservation.team1Ids.length >= 2 && newTeam2Ids.length >= 2;
 
-      // 4. Calcular isOpenMatch (Lógica duplicada de Service por seguridad en transacción)
-      bool newIsOpenMatch = reservation.isOpenMatch;
-      if (reservation.type == ReservationType.falta1) {
-        newIsOpenMatch = false; // Se cierra al primer join
-      } else if (reservation.type == ReservationType.match2vs2) {
-        if (isComplete) {
-          newIsOpenMatch = false;
-        }
-      } else if (isComplete) {
-        newIsOpenMatch = false;
-      }
+      // Si está completo, cerrar búsqueda
+      final newIsOpenMatch = isComplete ? false : reservation.isOpenMatch;
 
-      // 5. Actualizar con los nuevos datos
+      // Actualizar con los nuevos datos
       transaction.update(docRef, {
         'team2Ids': newTeam2Ids,
         if (isComplete) 'status': ReservationStatus.approved.name,

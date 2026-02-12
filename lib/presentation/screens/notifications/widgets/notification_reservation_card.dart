@@ -7,6 +7,7 @@ import 'package:padel_punilla/domain/models/reservation_model.dart';
 import 'package:padel_punilla/domain/repositories/club_repository.dart';
 import 'package:padel_punilla/domain/repositories/court_repository.dart';
 import 'package:padel_punilla/domain/repositories/reservation_repository.dart';
+import 'package:padel_punilla/presentation/screens/notifications/widgets/notification_reservation_card_skeleton.dart';
 import 'package:provider/provider.dart';
 
 class NotificationReservationCard extends StatefulWidget {
@@ -66,7 +67,7 @@ class _NotificationReservationCardState
       future: _detailsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const NotificationReservationCardSkeleton();
         }
 
         if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {

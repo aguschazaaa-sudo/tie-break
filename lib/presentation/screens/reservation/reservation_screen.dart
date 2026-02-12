@@ -409,6 +409,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
         updatedReservation = reservation.copyWith(
           status: ReservationStatus.approved,
           participantIds: [...reservation.participantIds, currentUser.uid],
+          isOpenMatch: false, // Cerrar búsqueda al unirse
         );
       } else if (reservation.type == ReservationType.match2vs2 &&
           partner != null) {

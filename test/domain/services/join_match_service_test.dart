@@ -288,11 +288,11 @@ void main() {
     // =========================================================================
 
     group('applyJoin', () {
-      test('should add user to team2Ids for falta1', () {
-        // Arrange
+      test('should add user to participantIds for falta1', () {
+        // Arrange - Falta1 usa participantIds, no teams
         final reservation = createReservation(
           type: ReservationType.falta1,
-          team1Ids: ['user1', 'user1b', 'user1c'],
+          team1Ids: [],
           team2Ids: [],
         );
 
@@ -303,17 +303,16 @@ void main() {
           partnerId: null,
         );
 
-        // Assert
-        expect(result.team2Ids, contains('user2'));
+        // Assert - debe ir a participantIds, NO a team2Ids
+        expect(result.participantIds, contains('user2'));
+        expect(result.team2Ids, isEmpty);
       });
 
       test('should set isOpenMatch to false for Falta 1 after one join', () {
-        // Arrange - Falta 1, solo 1 jugador en team1. Total 1.
-        // Al unirse user2, serán 2. NO está completo el match (faltan 2 más),
-        // pero la regla de negocio dice "se cierra el slot".
+        // Arrange - Falta 1 se cierra inmediatamente al unirse alguien
         final reservation = createReservation(
           type: ReservationType.falta1,
-          team1Ids: ['user1'],
+          team1Ids: [],
           team2Ids: [],
         );
 
@@ -325,8 +324,9 @@ void main() {
         );
 
         // Assert
-        expect(result.isOpenMatch, isFalse); // Debe cerrarse
-        expect(result.team2Ids, contains('user2'));
+        expect(result.isOpenMatch, isFalse);
+        expect(result.participantIds, contains('user2'));
+        expect(result.team2Ids, isEmpty);
       });
 
       test('should add user and partner to team2Ids for 2vs2', () {
@@ -350,12 +350,12 @@ void main() {
         expect(result.team2Ids.length, 2);
       });
 
-      test('should set status to approved when match is complete', () {
-        // Arrange - falta1 necesita 4 jugadores, ya hay 3
+      test('should not change status for falta1 (handled separately)', () {
+        // Arrange - Falta 1 no usa teams, solo participantIds
         final reservation = createReservation(
           type: ReservationType.falta1,
-          team1Ids: ['user1', 'user1b'],
-          team2Ids: ['user1c'],
+          team1Ids: [],
+          team2Ids: [],
           status: ReservationStatus.pending,
         );
 
@@ -366,8 +366,10 @@ void main() {
           partnerId: null,
         );
 
-        // Assert
-        expect(result.status, ReservationStatus.approved);
+        // Assert - Falta1 no auto-aprueba por el service,
+        // eso se maneja en la pantalla de reserva
+        expect(result.participantIds, contains('user2'));
+        expect(result.isOpenMatch, isFalse);
       });
 
       test('should set status to approved for 2vs2 when team2 is filled', () {

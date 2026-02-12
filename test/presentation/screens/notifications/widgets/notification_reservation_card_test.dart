@@ -9,6 +9,7 @@ import 'package:padel_punilla/domain/repositories/club_repository.dart';
 import 'package:padel_punilla/domain/repositories/court_repository.dart';
 import 'package:padel_punilla/domain/repositories/reservation_repository.dart';
 import 'package:padel_punilla/presentation/screens/notifications/widgets/notification_reservation_card.dart';
+import 'package:padel_punilla/presentation/screens/notifications/widgets/notification_reservation_card_skeleton.dart';
 import 'package:provider/provider.dart';
 import 'package:padel_punilla/domain/enums/locality.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -86,6 +87,7 @@ void main() {
   testWidgets('renders loading state initially', (tester) async {
     when(() => mockReservationRepository.getReservationById('res1')).thenAnswer(
       (_) async {
+        // Add delay to simulate network
         await Future.delayed(const Duration(milliseconds: 100));
         return testReservation;
       },
@@ -93,7 +95,8 @@ void main() {
 
     await tester.pumpWidget(createWidgetUnderTest('res1'));
 
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    // Expect skeleton instead of circular progress indicator
+    expect(find.byType(NotificationReservationCardSkeleton), findsOneWidget);
     await tester.pumpAndSettle();
   });
 
