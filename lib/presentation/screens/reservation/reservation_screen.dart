@@ -301,6 +301,14 @@ class _ReservationScreenState extends State<ReservationScreen> {
     }
   }
 
+  /// Permite al usuario unirse a un partido incompleto (2vs2 o Falta 1).
+  ///
+  /// Muestra diálogos de confirmación según el tipo de reserva:
+  /// - Falta 1: confirmación simple
+  /// - 2vs2: confirmación + selección de compañero
+  ///
+  /// Delega la operación final a [ReservationRepository.joinMatch],
+  /// que usa una transacción Firestore para garantizar consistencia.
   Future<void> _joinReservation(ReservationModel reservation) async {
     final authRepo = context.read<AuthRepository>();
     final currentUser = authRepo.currentUser;
@@ -312,8 +320,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
       return;
     }
 
+    // Validación rápida: ya es parte de la reserva
     if (reservation.userId == currentUser.uid ||
-        reservation.team1Ids.contains(currentUser.uid)) {
+        reservation.team1Ids.contains(currentUser.uid) ||
+        reservation.team2Ids.contains(currentUser.uid) ||
+        reservation.participantIds.contains(currentUser.uid)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Ya eres parte de esta reserva')),
       );
@@ -322,7 +333,6 @@ class _ReservationScreenState extends State<ReservationScreen> {
 
     // Validar género para reservas solo mujeres
     if (reservation.womenOnly) {
-      // Necesitamos verificar el género del usuario actual
       if (_currentUserModel?.gender != PlayerGender.female) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -336,6 +346,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
     var confirm = false;
     UserModel? partner;
 
+    // --- Diálogos de confirmación según tipo ---
     if (reservation.type == ReservationType.falta1) {
       confirm =
           await showDialog<bool>(
@@ -358,7 +369,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
           ) ??
           false;
     } else if (reservation.type == ReservationType.match2vs2) {
-      // First confirm intention
+      // Confirmar intención de desafiar
       final wantToJoin =
           await showDialog<bool>(
             context: context,
@@ -384,14 +395,14 @@ class _ReservationScreenState extends State<ReservationScreen> {
 
       if (!wantToJoin) return;
 
-      // Select partner - con filtro de género si es solo mujeres
+      // Seleccionar compañero — con filtro de género si es solo mujeres
       if (mounted) {
         final genderFilter = reservation.womenOnly ? PlayerGender.female : null;
         partner = await showDialog<UserModel>(
           context: context,
           builder: (context) => UserSelectionDialog(genderFilter: genderFilter),
         );
-        if (partner == null) return; // Cancelled selection
+        if (partner == null) return; // Canceló la selección
         confirm = true;
       }
     }
@@ -401,31 +412,23 @@ class _ReservationScreenState extends State<ReservationScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final reservationService = context.read<ReservationRepository>();
-
-      var updatedReservation = reservation;
-
-      if (reservation.type == ReservationType.falta1) {
-        updatedReservation = reservation.copyWith(
-          status: ReservationStatus.approved,
-          participantIds: [...reservation.participantIds, currentUser.uid],
-          isOpenMatch: false, // Cerrar búsqueda al unirse
-        );
-      } else if (reservation.type == ReservationType.match2vs2 &&
-          partner != null) {
-        updatedReservation = reservation.copyWith(
-          status: ReservationStatus.approved,
-          team2Ids: [currentUser.uid, partner.id],
-        );
-      }
-
-      await reservationService.updateReservation(updatedReservation);
+      // Delegar al método transaccional del repositorio.
+      // joinMatch() se encarga de:
+      // - Agregar jugadores a team2Ids (2vs2) o participantIds (Falta1)
+      // - Actualizar status a approved si el partido se completa
+      // - Cerrar isOpenMatch cuando corresponda
+      final reservationRepo = context.read<ReservationRepository>();
+      await reservationRepo.joinMatch(
+        reservationId: reservation.id,
+        userId: currentUser.uid,
+        partnerId: partner?.id,
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Te has unido al partido!')),
+          const SnackBar(content: Text('¡Te has unido al partido!')),
         );
-        _dataFuture = _fetchData(); // Refresh grid
+        _dataFuture = _fetchData(); // Refrescar la grilla
       }
     } catch (e) {
       if (mounted) {

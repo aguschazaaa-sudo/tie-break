@@ -81,10 +81,11 @@ class JoinMatchService {
       final newParticipantIds = List<String>.from(reservation.participantIds);
       newParticipantIds.add(userId);
 
-      // Falta1 se cierra inmediatamente al primer join
+      // Falta1 se cierra y aprueba inmediatamente al primer join
       return reservation.copyWith(
         participantIds: newParticipantIds,
         isOpenMatch: false,
+        status: ReservationStatus.approved,
       );
     }
 

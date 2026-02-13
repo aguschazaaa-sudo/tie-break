@@ -245,6 +245,12 @@ class _JoinMatchSheetState extends State<JoinMatchSheet> {
             ? colorScheme.onTertiaryContainer
             : colorScheme.onSecondaryContainer;
 
+    // Contador de jugadores: 2vs2 usa teams, Falta1 usa owner + participantIds
+    final playerCount =
+        reservation.type == ReservationType.match2vs2
+            ? reservation.team1Ids.length + reservation.team2Ids.length
+            : 1 + reservation.participantIds.length;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -349,10 +355,10 @@ class _JoinMatchSheetState extends State<JoinMatchSheet> {
             ),
           ],
 
-          // Jugadores actuales
+          // Jugadores actuales según tipo de reserva
           const SizedBox(height: 12),
           Text(
-            'Jugadores: ${reservation.team1Ids.length + reservation.team2Ids.length}/4',
+            'Jugadores: $playerCount/4',
             style: textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),

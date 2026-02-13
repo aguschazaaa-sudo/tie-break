@@ -333,7 +333,7 @@ void main() {
         expect(result.participantIds.length, 2);
       });
 
-      test('status no cambia por el service (se maneja en la pantalla)', () {
+      test('status cambia a approved al unirse (auto-aprobación)', () {
         final reservation = createFalta1(status: ReservationStatus.pending);
 
         final result = service.applyJoin(
@@ -342,8 +342,8 @@ void main() {
           partnerId: null,
         );
 
-        // El service no cambia el status para Falta 1
-        expect(result.status, ReservationStatus.pending);
+        // Falta 1 se aprueba automáticamente al primer join
+        expect(result.status, ReservationStatus.approved);
       });
 
       test('partnerId es ignorado en Falta 1 (solo para 2vs2)', () {

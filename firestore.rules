@@ -90,8 +90,8 @@ service cloud.firestore {
         (request.auth.uid == resource.data.userId && 
          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'cancellationReason']) &&
          request.resource.data.status == 'cancelled') ||
-        // Anyone can join a match (update team2Ids, optionally status, isOpenMatch)
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['team2Ids', 'status', 'isOpenMatch'])
+        // Anyone can join a match (update team2Ids/participantIds, optionally status, isOpenMatch)
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['team2Ids', 'participantIds', 'status', 'isOpenMatch'])
       );
     }
 

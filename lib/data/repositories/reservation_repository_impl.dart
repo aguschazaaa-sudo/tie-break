@@ -219,10 +219,11 @@ class ReservationRepositoryImpl implements ReservationRepository {
         final newParticipantIds = List<String>.from(reservation.participantIds);
         newParticipantIds.add(userId);
 
-        // Falta1 se cierra inmediatamente al primer join
+        // Falta1 se cierra y aprueba inmediatamente al primer join
         transaction.update(docRef, {
           'participantIds': newParticipantIds,
           'isOpenMatch': false,
+          'status': ReservationStatus.approved.name,
         });
         return;
       }
